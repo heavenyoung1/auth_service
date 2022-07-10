@@ -10,4 +10,5 @@
 1. Клонируйте репозиторий локально.
 2. Запустите сервер с Django командой
 ' python manage.py runserver '
+![text](https://github.com/heavenyoung1/django_password_generator/blob/master/home_page.png 'ork')
 
