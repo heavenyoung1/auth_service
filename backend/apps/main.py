@@ -1,7 +1,15 @@
 from fastapi import FastAPI
+import uvicorn
 
-app = FastAPI()
+app = FastAPI(
+    title="Booking Service",
+    description="Creator HeavenYoung",
+    version="0.0.1",
+)
 
 @app.get("/")
-async def root():
+def root():
     return {"message": "Hello World!"}
+
+if __name__ == "__main__":
+    uvicorn.run("main:app", reload=True)
