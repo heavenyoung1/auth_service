@@ -10,6 +10,7 @@ def encode_jwt(payload, private_key, algorithm):
     )
     return encoded
 
+
 def decode_jwt(token, public_key, algorithm):
     decoded = jwt.encode(
         token,
