@@ -2,19 +2,26 @@ import jwt
 import starlette
 from config import settings
 
-def encode_jwt(payload, private_key, algorithm):
+def encode_jwt(
+                payload: str,
+                private_key: str,
+                algorithm: str
+                ):
     encoded = jwt.encode(
         payload,
-        private_key=settings.auth_jwt.private_key_path.read_text(),
-        algorithm=settings.auth_jwt.algorithm,
+        private_key,
+        algorithm,
     )
     return encoded
 
-
-def decode_jwt(token, public_key, algorithm):
+def decode_jwt(
+                token: str,
+                public_key: str,
+                algorithm: str
+               ):
     decoded = jwt.encode(
         token,
-        public_key=settings.auth_jwt.public_key_path.read_text(),
-        algorithm=settings.auth_jwt.algorithm,
+        public_key,
+        algorithm,
     )
     return decoded
