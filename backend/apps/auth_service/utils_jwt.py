@@ -1,3 +1,4 @@
+import bcrypt
 import jwt
 import starlette
 from config import settings
@@ -25,3 +26,17 @@ def decode_jwt(
         algorithm=[algorithm],
     )
     return decoded
+
+def hash_password(password: str) -> bytes:
+    salt = bcrypt.gensalt()
+    pwd_bytes: bytes = password.encode()
+    return bcrypt.hashpw(pwd_bytes, salt)
+
+def validate_password(
+        password: str,
+        hashed_password: bytes
+        ) -> bool:
+    return bcrypt.checkpw(
+        password=password.encode(),
+        hashed_password=hashed_password
+    )
