@@ -49,6 +49,7 @@ def validate_auth_user(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="user inactive",
         )
+    return user
 
 @router.post("/login", response_model=TokenInfo)
 def auth_user_issue_jwt(user: UserSchema = Depends(validate_auth_user())):
