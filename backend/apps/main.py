@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 import uvicorn
+from auth_service.auth import router as auth_router
 
-from auth_service.demo_jwt_auth import router
 
 app = FastAPI(
         title="Booking Service",
@@ -9,7 +9,7 @@ app = FastAPI(
         version="0.0.1",
     )
 
-app.include_router(router)
+app.include_router(auth_router, prefix="/auth", tags=["auth"])
 
 @app.get("/")
 def root():
