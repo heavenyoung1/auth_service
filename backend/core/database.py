@@ -1,14 +1,15 @@
-from sqlalchemy.ext.declarative import DeclarativeMeta, declarative_base
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 from fastapi import Depends
 from fastapi_users.db import SQLAlchemyUserDatabase, SQLAlchemyBaseUserTableUUID
 
-
+from sqlalchemy import text
+from sqlalchemy.orm import DeclarativeBase
 
 DATABASE_URL = 'postgresql+asyncpg://postgres:postgres@localhost:5432/testpostgreserver'
 
-Base: DeclarativeMeta = declarative_base()
+class Base(DeclarativeBase):
+    pass
 
 class User(SQLAlchemyBaseUserTableUUID, Base):
     pass
@@ -27,3 +28,4 @@ async def get_async_session():
 
 async def get_user_db(session = Depends(get_async_session)):
     yield SQLAlchemyUserDatabase(session, User)
+

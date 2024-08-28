@@ -1,10 +1,7 @@
 from fastapi import FastAPI
 import uvicorn
-from auth_service.auth import router as auth_router
 
 app = FastAPI()
-
-app.include_router(auth_router, prefix="/auth", tags=["Authentication"])
 
 @app.get("/")
 def root():
