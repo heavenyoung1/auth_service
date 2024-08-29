@@ -18,10 +18,10 @@ class User(SQLAlchemyBaseUserTableUUID, Base):
 engine = create_async_engine(DATABASE_URL)
 
 async_session_maker = sessionmaker(
-                engine,
-                class_=AsyncSession,
-                expire_on_commit=False,
-)
+        engine,
+        class_=AsyncSession,
+        expire_on_commit=False,
+    )
 
 async def get_async_session():
     async with async_session_maker() as session:
@@ -50,16 +50,21 @@ async def check_tables():
         # Предположим, что строки возвращаются в виде кортежей
         print(f"Existing tables: {[row[0] for row in tables]}")
 
+async def create_schema():
+    async with engine.connect() as connection:
+        await connection.execute(text("CREATE SCHEMA IF NOT EXISTS your_schema;"))
 
 async def main():
     # Проверим подключение к базе данных
     await check_db_connection()
 
+    #await create_schema()
+
     # Создадим таблицы
-    await create_db_and_tables()
+    #await create_db_and_tables()
 
     # Проверим существующие таблицы
-    await check_tables()
+    #await check_tables()
 
 if __name__ == "__main__":
     import asyncio
