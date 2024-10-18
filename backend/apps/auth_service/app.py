@@ -1,8 +1,8 @@
-from contextlib import asynccontextmanager
-
 from fastapi import Depends, FastAPI
 
-from database import User, create_db_and_tables
+from ..main import app
+
+from database import User
 from schemas import UserCreate, UserRead, UserUpdate
 from users import (
     SECRET,
@@ -11,16 +11,6 @@ from users import (
     fastapi_users,
     google_oauth_client,
 )
-
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    # Not needed if you setup a migration system like Alembic
-    await create_db_and_tables()
-    yield
-
-
-app = FastAPI(lifespan=lifespan)
 
 app.include_router(
     fastapi_users.get_auth_router(auth_backend), prefix="/auth/jwt", tags=["auth"]
@@ -50,7 +40,6 @@ app.include_router(
     prefix="/auth/google",
     tags=["auth"],
 )
-
 
 @app.get("/authenticated-route")
 async def authenticated_route(user: User = Depends(current_active_user)):
