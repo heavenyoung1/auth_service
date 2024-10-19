@@ -1,22 +1,6 @@
-from fastapi_users.authentication import JWTStrategy
-
-# PUBLIC_KEY = """-----BEGIN PUBLIC KEY-----
-# # Your RSA public key in PEM format goes here
-# -----END PUBLIC KEY-----"""
+# from fastapi_users.authentication import JWTStrategy
 #
-# PRIVATE_KEY = """-----BEGIN RSA PRIVATE KEY-----
-# # Your RSA private key in PEM format goes here
-# -----END RSA PRIVATE KEY-----"""
+# SECRET = "SECRET"
 #
 # def get_jwt_strategy() -> JWTStrategy:
-#     return JWTStrategy(
-#         secret=PRIVATE_KEY,
-#         lifetime_seconds=3600,
-#         algorithm="RS256",
-#         public_key=PUBLIC_KEY,
-#     )
-
-SECRET = "SECRET"
-
-def get_jwt_strategy() -> JWTStrategy:
-    return JWTStrategy(secret=SECRET, lifetime_seconds=3600)
+#     return JWTStrategy(secret=SECRET, lifetime_seconds=3600)
