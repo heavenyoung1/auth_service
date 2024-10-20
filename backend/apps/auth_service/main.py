@@ -1,5 +1,7 @@
 import uuid
 
+import uvicorn
+
 from fastapi import FastAPI
 from fastapi_users import FastAPIUsers
 from auth import auth_backend
@@ -19,3 +21,5 @@ app.include_router(
     tags=["auth"],
 )
 
+if __name__ == "__main__":
+    uvicorn.run("app.app:app", host="0.0.0.0", log_level="info")
