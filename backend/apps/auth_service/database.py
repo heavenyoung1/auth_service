@@ -1,8 +1,5 @@
-from fastapi_users.db import SQLAlchemyBaseUserTableUUID, SQLAlchemyUserDatabase
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
-from fastapi import Depends
-from models import User
-from base import Base
+from apps.auth_service.models.base import Base
 
 from typing import AsyncGenerator
 
