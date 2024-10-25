@@ -10,7 +10,7 @@ from fastapi_users.db import (
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
 
-class User( Base, IdIntPkMixin, SQLAlchemyBaseUserTable[int]):
+class User(Base, IdIntPkMixin, SQLAlchemyBaseUserTable[int]):
     pass
 
     @classmethod

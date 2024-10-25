@@ -3,6 +3,7 @@ from fastapi_users.authentication import AuthenticationBackend, BearerTransport,
 SECRET = "SECRET"
 
 # Опеределяет что токен передаётся через заголовок HTTP-запроса Authorization: Bearer <token>
+# ОТСЮДА ПОТОМ УДАЛИТЬ ЭТО
 bearer_transport = BearerTransport(tokenUrl="auth/jwt/login")
 
 def get_jwt_strategy() -> JWTStrategy: #JWTStrategy - стратегия создания токена
