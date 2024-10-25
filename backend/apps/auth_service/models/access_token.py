@@ -4,18 +4,23 @@ from fastapi_users_db_sqlalchemy.access_token import (
     SQLAlchemyAccessTokenDatabase,
     SQLAlchemyBaseAccessTokenTable,
 )
+from sqlalchemy import  Integer, ForeignKey
+from typing import TYPE_CHECKING
+
 from sqlalchemy.ext.asyncio import AsyncSession
 from ..types.user_id import UserIdType
+from sqlalchemy.orm import Mapped, mapped_column
 
+if TYPE_CHECKING:
+    from sqlalchemy.ext.asyncio import AsyncSession
 
 class AccessToken(SQLAlchemyBaseAccessTokenTable[UserIdType], Base):
-    pass
+    user_id: Mapped[UserIdType] = mapped_column(
+        Integer,
+        ForeignKey("user.id", onedelete="cascade"),
+        nullable=False,
+    )
 
-
-
-
-
-async def get_access_token_db(
-    session: AsyncSession = Depends(get_async_session),
-):
-    yield SQLAlchemyAccessTokenDatabase(session, AccessToken)
+    @classmethod
+    def get_db(cls, session: "AsyncSession"):
+        return SQLAlchemyAccessTokenDatabase(session, cls)
