@@ -1,9 +1,9 @@
-from typing import Annotated
-
-from typing import TYPE_CHECKING
-from ..core.user_manager import UserManager
 from fastapi import Depends
 
+from typing import Annotated
+from typing import TYPE_CHECKING
+
+from ..core.user_manager import UserManager
 from .users import get_user_db
 
 if TYPE_CHECKING:
