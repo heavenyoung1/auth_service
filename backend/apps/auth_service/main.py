@@ -5,7 +5,7 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi_users import FastAPIUsers
 from apps.auth_service.authentification.auth_backend import auth_backend
-from user_manager import get_user_manager
+from apps.auth_service.core.user_manager import get_user_manager
 from schemas import UserCreate, UserRead, UserUpdate
 
 from database import User
