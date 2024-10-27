@@ -4,6 +4,8 @@ from pydantic import PostgresDsn
 
 class AccessToken(BaseModel):
     lifetime_seconds: int = 3600
+    reset_password_token_secret: str
+    verification_token_secret: str
 
 class DataBaseConfig(BaseModel):
     url: PostgresDsn
@@ -15,6 +17,7 @@ class DataBaseConfig(BaseModel):
 class Settings(BaseSettings):
     access_token: AccessToken = AccessToken()
     db: DataBaseConfig = DataBaseConfig()
+    env_prefix="APP_CONFIG__"
 
 
 
