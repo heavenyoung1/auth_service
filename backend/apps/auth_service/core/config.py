@@ -1,7 +1,6 @@
 from pydantic import BaseModel
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import PostgresDsn
-from pydantic_settings import SettingsConfigDict
 
 
 class AccessToken(BaseModel):
@@ -24,14 +23,16 @@ class DataBaseConfig(BaseModel):
 
 
 class Settings(BaseSettings):
-    access_token: AccessToken
-    db: DataBaseConfig = DataBaseConfig
-    api: ApiPrefix = ApiPrefix()
 
     model_config = SettingsConfigDict(
         env_file=(".env.template", ".env"),
         env_prefix="APP_CONFIG__",
+        case_sensitive=False,
+        env_nested_delimiter="__",
     )
+    access_token: AccessToken
+    db: DataBaseConfig
+    api: ApiPrefix = ApiPrefix()
 
 
 settings = Settings()
