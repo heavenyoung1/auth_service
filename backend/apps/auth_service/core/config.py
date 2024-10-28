@@ -23,8 +23,8 @@ class DataBaseConfig(BaseModel):
 
 
 class Settings(BaseSettings):
-    access_token: AccessToken = AccessToken()
-    db: DataBaseConfig = DataBaseConfig()
+    access_token: AccessToken
+    db: DataBaseConfig = DataBaseConfig
     env_prefix = "APP_CONFIG__"
     api: ApiPrefix = ApiPrefix()
 
