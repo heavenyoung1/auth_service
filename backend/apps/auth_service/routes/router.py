@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from ..core.config import settings
+from core.config import settings
 
 from auth import auth_router
 
