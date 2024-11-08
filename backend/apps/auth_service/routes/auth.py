@@ -1,9 +1,5 @@
 from fastapi import APIRouter
 
-# from ..core.config import settings
-# from ..dependencies.fastapi_users_configuration import fastapi_users
-# from ..authentification.auth_backend import authentification_backend
-
 from core.config import settings
 from dependencies.fastapi_users_configuration import fastapi_users
 from authentification.auth_backend import authentification_backend
