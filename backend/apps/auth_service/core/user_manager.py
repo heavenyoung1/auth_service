@@ -9,7 +9,7 @@ from fastapi_users import BaseUserManager, UUIDIDMixin, IntegerIDMixin
 from ..models.user import User
 from ..dependencies.users import get_user_db
 
-from ..types.user_id import UserIdType
+from ..app_types.user_id import UserIdType
 
 SECRET = "SECRET"
 

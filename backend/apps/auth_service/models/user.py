@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 
 from models.base import Base
 from mixins.id_int_pk import IdIntPkMixin
-from types.user_id import UserIdType
+from app_types.user_id import UserIdType
 
 from fastapi_users.db import SQLAlchemyUserDatabase, SQLAlchemyBaseUserTable
 

@@ -8,11 +8,12 @@ from sqlalchemy import Integer, ForeignKey
 from typing import TYPE_CHECKING
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from ..types.user_id import UserIdType
+from ..app_types.user_id import UserIdType
 from sqlalchemy.orm import Mapped, mapped_column
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
+
 
 class AccessToken(Base, SQLAlchemyBaseAccessTokenTable[UserIdType]):
     user_id: Mapped[UserIdType] = mapped_column(
