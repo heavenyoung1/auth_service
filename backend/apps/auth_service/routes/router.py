@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from auth import auth_router
+from routes.auth import auth_router
 
 # Основной маршрутизатор приложения
 router = APIRouter()
