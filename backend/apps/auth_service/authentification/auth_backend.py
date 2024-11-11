@@ -1,7 +1,9 @@
-from fastapi_users.authentication import AuthenticationBackend, BearerTransport, JWTStrategy
+from fastapi_users.authentication import (
+    AuthenticationBackend,
+)
 
-from transport import bearer_transport
-from strategy import get_database_strategy
+from authentification.strategy import get_database_strategy
+from authentification.transport import bearer_transport
 
 authentification_backend = AuthenticationBackend(
     name="access-token-db",
