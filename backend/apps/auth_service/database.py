@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
-from apps.auth_service.models.base import Base
+from models.base import Base
 
 from typing import AsyncGenerator
 
