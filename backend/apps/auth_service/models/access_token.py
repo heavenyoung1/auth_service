@@ -1,4 +1,4 @@
-from base import Base
+from models.base import Base
 
 from fastapi_users_db_sqlalchemy.access_token import (
     SQLAlchemyAccessTokenDatabase,
