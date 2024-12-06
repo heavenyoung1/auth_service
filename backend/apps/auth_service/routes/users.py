@@ -12,8 +12,9 @@ router = APIRouter(
 )
 
 router.include_router(
-    fastapi_users.get_users_router(UserRead, UserUpdate),
-    prefix="/users",
-    tags=["users"],
+    router=fastapi_users.get_users_router(
+        UserRead,
+        UserUpdate,
+    ),
 )
 
