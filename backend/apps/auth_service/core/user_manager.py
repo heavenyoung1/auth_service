@@ -1,12 +1,10 @@
 import logging
-import uuid
 from typing import Optional, TYPE_CHECKING
 
-from fastapi import Depends, Request
+from fastapi import Request
 from fastapi_users import BaseUserManager, UUIDIDMixin, IntegerIDMixin
 
 from models.user import User
-from dependencies.users import get_user_db
 
 from app_types.user_id import UserIdType
 
