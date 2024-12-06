@@ -12,8 +12,9 @@ class AccessToken(BaseModel):
 class ApiPrefix(BaseModel):
     prefix: str = "/api"
     auth: str = "/auth"
+    users: str = "/users"
 
-    # Вот нахрена так сложно то, но зато динамично, хотя значения то берутся из класса, хм..
+
     @property
     def bearer_token_url(self) -> str:
         parts = (self.prefix, self.auth)
