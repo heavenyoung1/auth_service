@@ -5,5 +5,6 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13.3"
 dependencies = [
+    "fastapi>=0.115.12",
     "sqlalchemy>=2.0.40",
 ]
