@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
-engine = create_engine("ЗДЕСЬ ВПИШИ СВОЮ БД ПОЗЖЕ", echo=True)
-URL = "СТРОКА ДЛЯ ПОДКЛЮЧЕНИЯ БД"
-# Позже выбери один из вариантов создания движка
-# create_engine.echo = True (регистрация всех инструкций, есть также False/debug)
+engine = create_engine("sqlite+pysqlite:///:memory:", echo=True)
+
+Session = sessionmaker(engine)

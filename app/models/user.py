@@ -11,6 +11,7 @@ class User(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(30))
     fullname: Mapped[Optional[str]]
+    hashed_password = Mapped(String, nullable=False)
 
     # Для отладки определяется метод repr
     def __repr__(self) -> str:
