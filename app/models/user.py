@@ -1,3 +1,5 @@
+from enum import Enum
+
 from sqlalchemy import String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from typing import Optional
@@ -5,13 +7,18 @@ from typing import Optional
 class Base(DeclarativeBase):
     pass
 
+class Role(Enum):
+    ADMIN = "admin"
+    USER = "user"
+
 class User(Base):
     __tablename__ = "user"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(30))
-    fullname: Mapped[Optional[str]]
-    hashed_password = Mapped(String, nullable=False)
+    fullname: Mapped[str] = mapped_column(String(100))
+    hashed_password: Mapped[str] = mapped_column(String(128), nullable=False)
+    role: Mapped[Role] = mapped_column(default=Role.USER, nullable=False)
 
     # Для отладки определяется метод repr
     def __repr__(self) -> str:
