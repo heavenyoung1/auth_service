@@ -23,3 +23,5 @@ def test_user_create_invalid_password():
         assert False, "Expected ValidationError"
     except ValidationError:
         assert True
+
+# Команда для запуска тестов pytest tests/ -v 
