@@ -23,3 +23,8 @@ class Token(BaseModel):
     access_token: str
     token_type: str
 
+# Тест создания пользователя
+if __name__ == "__main__":
+    user_create = UserCreate(login="testUser", fullname="Piter Parker", password="123456", role=Role.ADMIN)
+    print(user_create)
+
