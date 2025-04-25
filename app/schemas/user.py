@@ -25,13 +25,3 @@ class Token(BaseModel):
     access_token: str
     token_type: str
 
-# Тест создания пользователя
-if __name__ == "__main__":
-    user_create = UserCreate(login="testUser", fullname="Piter Parker", password="123456", role=Role.ADMIN)
-    print(user_create)
-
-# Тест валидации данных 
-try:
-    invalid_user = UserCreate(login="i", fullname="Test", password="123", role=Role.USER)
-except ValueError as e:
-    print(f"Ошибка валидации данных {e}")
