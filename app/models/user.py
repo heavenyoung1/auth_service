@@ -2,12 +2,11 @@ from enum import Enum
 
 from sqlalchemy import String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from typing import Optional
 
 class Base(DeclarativeBase):
     pass
 
-class Role(Enum):
+class Role(str, Enum):
     ADMIN = "admin"
     USER = "user"
 
