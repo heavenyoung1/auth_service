@@ -17,14 +17,18 @@ class User(Base):
     login: Mapped[str] = mapped_column(String(30))
     fullname: Mapped[str] = mapped_column(String(100))
     hashed_password: Mapped[str] = mapped_column(String(128), nullable=False)
-    role: Mapped[Role] = mapped_column(Enum(Role), default=Role.USER, nullable=False) #Enum(Role) можно удалить (далее), нужен для прозрачной работы с БД и валидации данных 
+    role: Mapped[Role] = mapped_column(default=Role.USER, nullable=False) #Enum(Role) можно удалить (далее), нужен для прозрачной работы с БД и валидации данных 
 
     # Для отладки определяется метод repr
     def __repr__(self) -> str:
-        return f"User(id={self.id!r}, name={self.name!r}, fullname={self.fullname!r})"
+        return f"User(id={self.id!r}, login={self.login!r}, fullname={self.fullname!r})"
 
 # Для тестов
-user = User(id=1, name="Ivan", fullname="Ivan Petrov")
+user = User(id=1, login="heavenyoung", fullname="Ivan Petrov")
+
+#Для отладки вывод метода __repr__
+print(user.__repr__)
 
 User.__tablename__
 User.__mapper__
+
