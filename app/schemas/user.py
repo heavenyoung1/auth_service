@@ -1,6 +1,8 @@
 from pydantic import BaseModel, Field
 from app.models.user import Role
 
+# python -m app.schemas.user - команда для тестирования работы модуля как пакета
+
 class UserBase(BaseModel):
     login: str
     fullname: str
@@ -13,8 +15,11 @@ class UserReturn(UserBase):
     id: int
     role: Role
 
+    # для преобразования SQLAlchemy-объектов??????
     class Config:
         from_attributes = True
 
-print(Role.ADMIN)
-# python -m app.schemas.user - команда для тестирования работы модуля как пакета
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
