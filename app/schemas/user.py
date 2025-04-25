@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from models.user import Role
+from app.models.user import Role
 
 class UserBase(BaseModel):
     login: str
@@ -16,3 +16,5 @@ class UserReturn(UserBase):
     class Config:
         from_attributes = True
 
+print(Role.ADMIN)
+# python -m app.schemas.user - команда для тестирования работы модуля как пакета
