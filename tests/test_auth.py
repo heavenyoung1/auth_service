@@ -28,3 +28,5 @@ def test_verify_password_empty(test_password):
     hashed_password = pwd_context.hash(test_password)
 
     assert verify_password("", hashed_password) is False
+
+# ---------------- ТЕСТЫ ДЛЯ ТОКЕНА ---------------- #
