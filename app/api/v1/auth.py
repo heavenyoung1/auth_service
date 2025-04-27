@@ -1,13 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
-from logging import Logger, getLogger
-
 from app.schemas.user import UserCreate, Token
 from app.database.db import get_session
 from app.models.user import User
 from app.core.security import get_password_to_hash, create_access_token
 
-
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+from logging import Logger, getLogger
 
 router = APIRouter()
 
@@ -16,7 +14,7 @@ def register(
             user_in: UserCreate, 
             session: Session = Depends(get_session),
             logger: Logger = Depends(getLogger)
-):
+) -> Token:
     # Проверка существования пользователя
     db_user = session.query(User).filter(User.login == user_in.login).first()
     if db_user:
