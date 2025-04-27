@@ -15,6 +15,7 @@ def register(
             session: Session = Depends(get_session),
             logger: Logger = Depends(getLogger)
 ) -> Token:
+    
     # Проверка существования пользователя
     db_user = session.query(User).filter(User.login == user_in.login).first()
     if db_user:
