@@ -5,7 +5,7 @@ from fastapi import Depends
 
 from typing import Annotated
 
-url = "sqlite+pysqlite:///:memory:"
+#url = "sqlite+pysqlite:///:memory:"
 connect_args = {"echo": True}
 
 engine = create_engine(url, connect_args=connect_args)
