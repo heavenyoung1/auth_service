@@ -1,36 +1,37 @@
-import pytest
-from sqlalchemy import create_engine, text
-
 from app.database.db import get_session, init_db
 from app.models.user import Base, User, Role
 
+import pytest
+from sqlalchemy import create_engine, text
+
+# Если возникают проблемы с неправильным чтением URL в терминале выполнить команду - удаление переменной окружения >>> Get-ChildItem Env:TEST_DATABASE_URL
+
 # Используем тестовую БД
 TEST_DATABASE_URL = "postgresql+psycopg2://postgres:P%40ssw0rd@192.168.31.168:5432/auth_test_db"
-engine = create_engine(TEST_DATABASE_URL, echo=True) #
+engine = create_engine(TEST_DATABASE_URL, echo=True)
 
 # "function": Фикстура создается и уничтожается для каждого теста (функции). Это значение по умолчанию и обеспечивает максимальную изоляцию тестов.
 
-@pytest.fixture(scope="function") # Почему здесь описана scope="function", что это значит
+@pytest.fixture(scope="function")
 def setup_db():
     init_db() # Создание таблиц
-    yield() # Зачем здесь это?
-    Base.metadata.drop_all(bind=engine)
+    yield()
+    Base.metadata.drop_all(bind=engine) # Удаление таблиц
 
 # Подключение к БД при помощи SQLAlchemy
-def test_sqlalchemy_connection(setup_db: tuple[()]):
+def test_sqlalchemy_connection(setup_db):
     with engine.connect() as connection:
         assert connection is not None
         print("Успешное подключение к PostgreSQL через SQLAlchemy!")
 
     # Получение версии PostgreSQL
     with engine.connect() as connection:
-        result = connection.execute(text("SELECT version();")) # Как вывести данные
-        version = result.fetchone()[0]
+        version = connection.execute(text("SELECT version();")).scalar() # Как вывести данные
         print(f"Версия PostgreSQL: {version}")
 
     # Получение списка баз данных
     with engine.connect() as connection:
-        result = connection.execute(text("SELECT datname FROM pg_database;")) # что такое pg_database
+        result = connection.execute(text("SELECT datname FROM pg_database;")) # pg_database — это системная таблица в PostgreSQL
         database = [row[0] for row in result]
         print("Список баз данных")
         for db in database:
@@ -51,7 +52,7 @@ def test_create_user(setup_db):
         session.commit()
 
         # Проверка создания пользователя (что он был создан)
-        db_user = session.query(User).filter(User.login == "testlogin").first() # Обязательно ли first()?
+        db_user = session.query(User).filter(User.login == "testlogin").first()
         assert db_user is not None, "Пользователь не был создан"
         assert db_user.login == "testlogin"
         print(f"Метод __repr__: {db_user}")
