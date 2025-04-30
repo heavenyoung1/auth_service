@@ -1,25 +1,32 @@
-from app.database.db import get_session, init_db
 from app.models.user import Base, User, Role
 
 import pytest
 from sqlalchemy import create_engine, text
+from sqlalchemy.orm import sessionmaker
 
 # Если возникают проблемы с неправильным чтением URL в терминале выполнить команду - удаление переменной окружения >>> Get-ChildItem Env:TEST_DATABASE_URL
 
 # Используем тестовую БД
 TEST_DATABASE_URL = "postgresql+psycopg2://postgres:P%40ssw0rd@192.168.31.168:5432/auth_test_db"
 engine = create_engine(TEST_DATABASE_URL, echo=True)
+Session = sessionmaker(engine)
 
-# "function": Фикстура создается и уничтожается для каждого теста (функции). Это значение по умолчанию и обеспечивает максимальную изоляцию тестов.
+# Функции для взаимодействия с тестовой БД
+def init_db():
+    Base.metadata.create_all(bind=engine)
 
-@pytest.fixture(scope="function")
+def get_session():
+    with Session() as session:
+        yield session
+
+@pytest.fixture(scope="function") # "function": Фикстура создается и уничтожается для каждого теста (функции).
 def setup_db():
     init_db() # Создание таблиц
     yield()
     Base.metadata.drop_all(bind=engine) # Удаление таблиц
 
 # Подключение к БД при помощи SQLAlchemy
-def test_sqlalchemy_connection(setup_db):
+def test_sqlalchemy_connection(setup_db: tuple[()]):
     with engine.connect() as connection:
         assert connection is not None
         print("Успешное подключение к PostgreSQL через SQLAlchemy!")
@@ -37,7 +44,7 @@ def test_sqlalchemy_connection(setup_db):
         for db in database:
             print(f"БД: {db}")
 
-def test_create_user(setup_db):
+def test_create_user(setup_db: tuple[()]):
     with next(get_session()) as session:
         # Создание тестового пользователя
         user = User(
