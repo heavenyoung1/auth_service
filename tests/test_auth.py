@@ -39,4 +39,4 @@ def test_register_success(client):
     print(response.text)  # Посмотреть сырой ответ
     print(response.json())  # Посмотреть распарсенный JSON
     assert response.status_code == 200
-    assert "access_token" in response.json
+    assert "access_token" in response.json()
