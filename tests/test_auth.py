@@ -61,3 +61,14 @@ def test_register_duplicate_login(client):
 
     assert response.status_code == 400
     assert response.json()["detail"] == "Такой логин уже существует."
+
+def test_register_short_password(client):
+    response = client.post("/API/v0.1/register", json={
+        "login": "testuser",
+        "fullname": "Test User",
+        "password": "000",
+        "role": "user"
+        }
+    )
+    
+    assert response.status_code == 422, "Ошибка 422, выдаётся Pydantic`ом, валидация происходит в схеме UserCreate"

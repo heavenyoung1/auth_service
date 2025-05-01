@@ -22,10 +22,6 @@ def register(
         raise HTTPException(status_code=400, detail="Такой логин уже существует.")
     
     # Создание нового пользователя
-
-    if len(user_in.password) < 3:
-        raise HTTPException(status_code=400, detail="Пароль должен быть минимум 3 символа.")
-
     hashed_password = get_password_to_hash(user_in.password)
     db_user = User(
                     login=user_in.login,
