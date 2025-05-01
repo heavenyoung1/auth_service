@@ -36,5 +36,7 @@ def test_register_success(client):
         "password": "password",
         "role": "user"
     })
+    print(response.text)  # Посмотреть сырой ответ
+    print(response.json())  # Посмотреть распарсенный JSON
     assert response.status_code == 200
     assert "access_token" in response.json
