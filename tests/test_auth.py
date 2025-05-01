@@ -8,6 +8,7 @@ from sqlalchemy import create_engine
 
 import pytest
 
+# Если в коде есть print, используй чтобы вывести Debug Response >>> pytest tests\test_auth.py -v -s
 # Настройка тестовой Базы Данных
 TEST_DATABASE_URL = "postgresql+psycopg2://postgres:P%40ssw0rd@192.168.31.168:5432/auth_test_db"
 engine = create_engine(TEST_DATABASE_URL, echo=True)
@@ -82,5 +83,6 @@ def test_register_short_password(client):
         "role": "user"
         }
     )
-    
+
     assert response.status_code == 422, "Ошибка 422, выдаётся Pydantic`ом, валидация происходит в схеме UserCreate"
+
