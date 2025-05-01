@@ -24,7 +24,7 @@ def register(
     # Создание нового пользователя
 
     if len(user_in.password) < 3:
-        raise HTTPException(status_code=400, detail="Пароль должен быть минимум 4 символа.")
+        raise HTTPException(status_code=400, detail="Пароль должен быть минимум 3 символа.")
 
     hashed_password = get_password_to_hash(user_in.password)
     db_user = User(
@@ -36,7 +36,8 @@ def register(
     
     session.add(db_user)
     session.commit()
-    session.refresh()
+    session.refresh(db_user)
+    logger.info(f"Пользователь {user_in.login} успешно зарегистрирован с id {db_user.id}")
 
     # Генеарация токена
     access_token = create_access_token(data={"sub": user_in.login})
