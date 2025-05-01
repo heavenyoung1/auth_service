@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from logging import Logger, getLogger
 
-router = APIRouter()
+router = APIRouter(tags=["auth"])
 
 @router.post("/register", response_model=Token)
 def register(
