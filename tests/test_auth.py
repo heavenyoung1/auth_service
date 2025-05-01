@@ -35,8 +35,29 @@ def test_register_success(client):
         "fullname": "Test User",
         "password": "password",
         "role": "user"
-    })
+        }
+    )
     print(response.text)  # Посмотреть сырой ответ
     print(response.json())  # Посмотреть распарсенный JSON
     assert response.status_code == 200
     assert "access_token" in response.json()
+
+def test_register_duplicate_login(client):
+    client.post("/API/v0.1/register", json={
+        "login": "testuser",
+        "fullname": "Test User",
+        "password": "password",
+        "role": "user"
+        }
+    )
+
+    response = client.post("/API/v0.1/register", json={
+        "login": "testuser",
+        "fullname": "Test User",
+        "password": "password",
+        "role": "user"
+        }
+    )
+
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Такой логин уже существует."
