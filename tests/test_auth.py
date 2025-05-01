@@ -20,7 +20,7 @@ def setup_db():
     Base.metadata.drop_all(bind=engine)
 
 @pytest.fixture
-def client(setupt_db):
+def client(setup_db):
     def override_get_session():
         with TestingSession() as session:
             yield session
@@ -28,3 +28,13 @@ def client(setupt_db):
     with TestClient(app) as client:
         yield client
     app.dependency_overrides.clear()
+
+def test_register_success(client):
+    response = client.post("/API/v0.1/register", json={
+        "login": "testuser",
+        "fullname": "Test User",
+        "password": "password",
+        "role": "user"
+    })
+    assert response.status_code == 200
+    assert "access_token" in response.json
