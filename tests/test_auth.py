@@ -23,13 +23,6 @@ def setup_db():
     Base.metadata.drop_all(bind=engine)
 
 @pytest.fixture
-def client(setup_db):
-    def override_get_session():
-        with TestingSession() as session:
-            yield session
-
-# Фикстура данных пользователя для отправки в register  
-@pytest.fixture
 def user_data():
     return {
         "login": "testuser",
@@ -37,6 +30,12 @@ def user_data():
         "password": "password",
         "role": "user"
     }
+
+@pytest.fixture
+def client(setup_db):
+    def override_get_session():
+        with TestingSession() as session:
+            yield session
 
     # Подменяем зависимость для тестов
     app.dependency_overrides[get_session] = override_get_session
@@ -49,14 +48,8 @@ def user_data():
     app.dependency_overrides.clear()
 
 # Тест успешной регистрации пользователя
-def test_register_success(client):
-    response = client.post("/API/v0.1/register", json={
-        "login": "testuser",
-        "fullname": "Test User",
-        "password": "password",
-        "role": "user"
-        }
-    )
+def test_register_success(client, user_data):
+    response = client.post("/API/v0.1/register", json=user_data) # Используем user_data из фикстуры
     print(response.text)  # Посмотреть сырой ответ
     print(response.json())  # Посмотреть распарсенный JSON
     assert response.status_code == 200
