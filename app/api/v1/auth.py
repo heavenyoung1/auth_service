@@ -88,6 +88,6 @@ def get_current_user(
         raise HTTPException(status_code=401, detail="Пользователь не найден")
     return user
 
-@router.post("/me", response_model=UserReturn)
+@router.get("/me", response_model=UserReturn)
 def reads_user_me(current_user = Depends(get_current_user)) -> User:
     return current_user
