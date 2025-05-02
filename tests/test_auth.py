@@ -109,3 +109,13 @@ def test_login_wrong_password(client, user_factory):
 
     assert response.status_code == 401
     assert response.json()["detail"] == "Неверный пароль"
+
+def test_login_unexistent_user(client):
+    response = client.post("/API/v0.1/login", data={
+        "username": "testUser111",
+        "password": "PASSWORD"
+        }
+    )
+    
+    assert response.status_code == 401
+    assert response.json()["detail"] == "Неверный логин"
