@@ -5,7 +5,7 @@ from app.models.user import User
 from app.core.security import get_password_to_hash, create_access_token, verify_password
 
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from jose import JWTError, jwt
 from logging import Logger, getLogger
@@ -13,7 +13,7 @@ from typing import Annotated
 
 router = APIRouter(tags=["auth"])
 
-oauth2_scheme = OAuth2PasswordRequestForm(tokenUrl="/API/v0.1/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/API/v0.1/login")
 
 @router.post("/register", response_model=Token)
 def register(
