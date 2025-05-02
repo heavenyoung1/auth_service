@@ -86,4 +86,20 @@ def test_register_short_password(client):
 
     assert response.status_code == 422, "Ошибка 422, выдаётся Pydantic`ом, валидация происходит в схеме UserCreate"
 
-# Тест входа с несуществующим логином
+# Тест успешного входа
+def test_login_success(client):
+    # Регистрация пользователя 
+    client.post("/API/v0.1/register", json={
+        "login": "testuser",
+        "fullname": "Test User",
+        "password": "testP@ssw0rd", # Слишком короткий пароль (3 символа)
+        "role": "user"
+        }
+    )
+    
+    # Логин пользователя
+    response = client.post("/API/v0.1/login", json={
+        "username": "testuser",
+        "password": "testP@ssw0rd"
+        }
+    )

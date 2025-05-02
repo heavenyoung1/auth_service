@@ -47,14 +47,23 @@ def login(
     session: Session = Depends(get_session),
     logger: Logger = Depends(getLogger)
 ) -> Token:
+    
     logger.info(f"Попытка входа для login: {form_data.username}")
+
+    # Проверка существования пользователя
     db_user = session.query(User).filter(User.login == form_data.username).first()
+
+    # Проверка наличия логина в БД
     if not db_user:
         logger.warning(f"Неверный логин")
         raise HTTPException(status_code=401, detail="Неверный логин")
+    
+    # Проверка наличия логина в БД и сравнение его с хешированным паролем
     if db_user and not verify_password(form_data.password, db_user.hashed_password):
         logger.warning(f"Неверный пароль для {form_data.username}")
         raise HTTPException(status_code=401, detail="Неверный пароль")
+    
+    # Генеарация токена
     access_token = create_access_token(data={"sub": db_user.login})
     logger.info(f"Успешный вход для {form_data.username}")
     return {"access_token": access_token, "token_type": "bearer"}
