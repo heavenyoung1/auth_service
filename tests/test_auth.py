@@ -107,3 +107,23 @@ def test_login_success(client):
     assert response.status_code == 200
     assert "access_token" in response.json()
     assert response.json()["token_type"] == "bearer"
+
+def test_login_wrong_password(client):
+        # Регистрация пользователя 
+    client.post("/API/v0.1/register", json={
+        "login": "testuser",
+        "fullname": "Test User",
+        "password": "password", # Слишком короткий пароль (3 символа)
+        "role": "user"
+        }
+    )
+
+        # Логин пользователя c неправильным паролем
+    response = client.post("/API/v0.1/login", data={
+        "username": "testuser",
+        "password": "PASSWORD"
+        }
+    )
+
+    assert response.status_code == 401
+    assert response.json()["detail"] == "Неверный пароль"
