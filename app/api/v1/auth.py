@@ -1,11 +1,13 @@
 from app.schemas.user import UserCreate, Token
 from app.database.db import get_session
 from app.models.user import User
-from app.core.security import get_password_to_hash, create_access_token
+from app.core.security import get_password_to_hash, create_access_token, verify_password
 
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from logging import Logger, getLogger
+from typing import Annotated
 
 router = APIRouter(tags=["auth"])
 
@@ -40,5 +42,16 @@ def register(
     return {"access_token": access_token, "token_type": "bearer"}
 
 @router.post("login", response_model=Token)
-def login():
-    pass
+def login(
+    form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+    session: Session = Depends(get_session),
+    logger: Logger = Depends(getLogger)
+) -> Token:
+    logger.info(f"Попытка входа для login: {form_data.username}")
+    db_user = session.query(User).filter(User.login == form_data.username).first()
+    if not db_user or not verify_password(form_data.password, db_user.hashed_password):
+        logger.warning(f"Неверный логин или пароль для {form_data.username}")
+        raise HTTPException(status_code=401, detail="Неверный логин или пароль")
+    access_token = create_access_token(data={"sub": db_user.login})
+    logger.info(f"Успешны вход для {form_data.username}")
+    return {"access_token": access_token, "token_type": "bearer"}
