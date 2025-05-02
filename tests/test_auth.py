@@ -28,6 +28,16 @@ def client(setup_db):
         with TestingSession() as session:
             yield session
 
+# Фикстура данных пользователя для отправки в register  
+@pytest.fixture
+def user_data():
+    return {
+        "login": "testuser",
+        "fullname": "Test User",
+        "password": "password",
+        "role": "user"
+    }
+
     # Подменяем зависимость для тестов
     app.dependency_overrides[get_session] = override_get_session
 
