@@ -1,11 +1,13 @@
-from app.schemas.user import UserCreate, Token
+from app.core.config import settings
 from app.database.db import get_session
+from app.schemas.user import UserCreate, Token
 from app.models.user import User
 from app.core.security import get_password_to_hash, create_access_token, verify_password
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
+from jose import JWTError, jwt
 from logging import Logger, getLogger
 from typing import Annotated
 
@@ -67,3 +69,21 @@ def login(
     access_token = create_access_token(data={"sub": db_user.login})
     logger.info(f"Успешный вход для {form_data.username}")
     return {"access_token": access_token, "token_type": "bearer"}
+
+oauth2_scheme = OAuth2PasswordRequestForm(tokenUrl="/API/v0.1/login")
+
+def get_current_user(
+        token: Annotated[str, Depends(oauth2_scheme)],
+        session: Session = Depends(get_session)
+) -> User:
+    try:
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        login: str = payload.get("sub")
+        if login is None:
+            raise HTTPException(status_code=401, detail="Неверный токен")
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Неверный токен")
+    user = session.query(User.filter(User.login == login).first())
+    if user is None:
+        raise HTTPException(status_code=401, detail="Пользователь не найден")
+    return user
