@@ -92,14 +92,18 @@ def test_login_success(client):
     client.post("/API/v0.1/register", json={
         "login": "testuser",
         "fullname": "Test User",
-        "password": "testP@ssw0rd", # Слишком короткий пароль (3 символа)
+        "password": "password", # Слишком короткий пароль (3 символа)
         "role": "user"
         }
     )
     
     # Логин пользователя
-    response = client.post("/API/v0.1/login", json={
+    response = client.post("/API/v0.1/login", data={
         "username": "testuser",
-        "password": "testP@ssw0rd"
+        "password": "password"
         }
     )
+
+    assert response.status_code == 200
+    assert "access_token" in response.json()
+    assert response.json()["token_type"] == "bearer"

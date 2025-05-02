@@ -41,7 +41,7 @@ def register(
     access_token = create_access_token(data={"sub": user_in.login})
     return {"access_token": access_token, "token_type": "bearer"}
 
-@router.post("login", response_model=Token)
+@router.post("/login", response_model=Token)
 def login(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     session: Session = Depends(get_session),
