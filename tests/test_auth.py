@@ -119,3 +119,19 @@ def test_login_unexistent_user(client):
     
     assert response.status_code == 401
     assert response.json()["detail"] == "Неверный логин"
+
+def test_get_current_user(client, user_factory):
+    user = user_factory()  # Создание данных пользователя из класса UserData
+    # Регистрация пользователя 
+    client.post("/API/v0.1/register", json=user.__dict__)
+    # Логин пользователя
+    response = client.post("/API/v0.1/login", data={
+        "username": user.login,
+        "password": user.password
+        }
+    )
+
+    token = response.json()["access_token"]
+    response.client.get("/API/v0.1/me", headers={"Authorization": f"Bearer {token}"})
+    assert response.status_code == 200
+    #FAILED tests/test_auth.py::test_get_current_user - AttributeError: 'Response' object has no attribute 'client'
