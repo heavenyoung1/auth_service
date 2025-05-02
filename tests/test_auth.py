@@ -95,19 +95,14 @@ def test_login_success(client, user_factory):
     assert "access_token" in response.json()
     assert response.json()["token_type"] == "bearer"
 
-def test_login_wrong_password(client):
+def test_login_wrong_password(client, user_factory):
+    user = user_factory()  # Создание данных пользователя из класса UserData
         # Регистрация пользователя 
-    client.post("/API/v0.1/register", json={
-        "login": "testuser",
-        "fullname": "Test User",
-        "password": "password",
-        "role": "user"
-        }
-    )
+    client.post("/API/v0.1/register", json=user.__dict__) 
 
         # Логин пользователя c неправильным паролем
     response = client.post("/API/v0.1/login", data={
-        "username": "testuser",
+        "username": "testUser",
         "password": "PASSWORD"
         }
     )
