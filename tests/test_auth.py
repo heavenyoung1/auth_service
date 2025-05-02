@@ -50,8 +50,6 @@ def client(setup_db):
 # Тест успешной регистрации пользователя
 def test_register_success(client, user_data):
     response = client.post("/API/v0.1/register", json=user_data) # Используем user_data из фикстуры
-    print(response.text)  # Посмотреть сырой ответ
-    print(response.json())  # Посмотреть распарсенный JSON
     assert response.status_code == 200
     assert "access_token" in response.json()
 
