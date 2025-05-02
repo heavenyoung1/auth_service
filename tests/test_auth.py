@@ -23,15 +23,7 @@ def setup_db():
     # Удаляем таблицы после теста
     Base.metadata.drop_all(bind=engine)
 
-# @pytest.fixture
-# def user_data():
-#     return {
-#         "login": "testuser",
-#         "fullname": "Test User",
-#         "password": "password",
-#         "role": "user"
-#     }
-
+# Фабрик для генерации данных пользователя
 @dataclass
 class UserData:
     login: str = "testUser"
@@ -63,31 +55,26 @@ def client(setup_db):
 
 # Тест успешной регистрации пользователя
 def test_register_success(client, user_factory):
-    user = user_factory()
-    response = client.post("/API/v0.1/register", json=user.__dict__) # Используем user_data из фикстуры
+    user = user_factory()  # Создание данных пользователя из класса UserData
+    response = client.post("/API/v0.1/register", json=user.__dict__)
     assert response.status_code == 200
     assert "access_token" in response.json()
 
 # Тест попытки регистрации с уже существующим логином
 def test_register_duplicate_login(client, user_factory):
-    user = user_factory()
-    client.post("/API/v0.1/register", json=user.__dict__) # Используем user_data из фикстуры
+    user = user_factory() # Создание данных пользователя из класса UserData
+    client.post("/API/v0.1/register", json=user.__dict__)
 
     # Попытка повторной регистрации с тем же логином
-    response = client.post("/API/v0.1/register", json=user.__dict__) # Используем user_data из фикстуры
+    response = client.post("/API/v0.1/register", json=user.__dict__)
 
     assert response.status_code == 400
     assert response.json()["detail"] == "Такой логин уже существует."
 
 # Тест валидации короткого пароля (менее 4 символов)
-def test_register_short_password(client):
-    response = client.post("/API/v0.1/register", json={
-        "login": "testuser",
-        "fullname": "Test User",
-        "password": "000", # Слишком короткий пароль (3 символа)
-        "role": "user"
-        }
-    )
+def test_register_short_password(client, user_factory):
+    user = user_factory(password="000")  # Создание данных пользователя из класса UserData c переопределением пароля
+    response = client.post("/API/v0.1/register", json=user.__dict__) 
 
     assert response.status_code == 422, "Ошибка 422, выдаётся Pydantic`ом, валидация происходит в схеме UserCreate"
 
