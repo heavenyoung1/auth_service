@@ -23,7 +23,7 @@ def setup_db():
     # Удаляем таблицы после теста
     Base.metadata.drop_all(bind=engine)
 
-# Фабрик для генерации данных пользователя
+# Фабрика для генерации данных пользователя
 @dataclass
 class UserData:
     login: str = "testUser"
@@ -97,10 +97,10 @@ def test_login_success(client, user_factory):
 
 def test_login_wrong_password(client, user_factory):
     user = user_factory()  # Создание данных пользователя из класса UserData
-        # Регистрация пользователя 
+    # Регистрация пользователя 
     client.post("/API/v0.1/register", json=user.__dict__) 
 
-        # Логин пользователя c неправильным паролем
+    # Логин пользователя c неправильным паролем
     response = client.post("/API/v0.1/login", data={
         "username": "testUser",
         "password": "PASSWORD"
