@@ -2,6 +2,7 @@ from app.main import app
 from app.models.user import Base
 from app.database.db import get_session
 
+from dataclasses import dataclass
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
@@ -22,14 +23,27 @@ def setup_db():
     # Удаляем таблицы после теста
     Base.metadata.drop_all(bind=engine)
 
+# @pytest.fixture
+# def user_data():
+#     return {
+#         "login": "testuser",
+#         "fullname": "Test User",
+#         "password": "password",
+#         "role": "user"
+#     }
+
+@dataclass
+class UserData:
+    login: str = "testUser"
+    fullname: str = "Test User"
+    password: str = "password"
+    role: str = "user"
+
 @pytest.fixture
-def user_data():
-    return {
-        "login": "testuser",
-        "fullname": "Test User",
-        "password": "password",
-        "role": "user"
-    }
+def user_factory():
+    def create_user(**kwargs):
+        return UserData(**kwargs)
+    return create_user
 
 @pytest.fixture
 def client(setup_db):
@@ -48,29 +62,19 @@ def client(setup_db):
     app.dependency_overrides.clear()
 
 # Тест успешной регистрации пользователя
-def test_register_success(client, user_data):
-    response = client.post("/API/v0.1/register", json=user_data) # Используем user_data из фикстуры
+def test_register_success(client, user_factory):
+    user = user_factory()
+    response = client.post("/API/v0.1/register", json=user.__dict__) # Используем user_data из фикстуры
     assert response.status_code == 200
     assert "access_token" in response.json()
 
 # Тест попытки регистрации с уже существующим логином
-def test_register_duplicate_login(client):
-    client.post("/API/v0.1/register", json={
-        "login": "testuser",
-        "fullname": "Test User",
-        "password": "password",
-        "role": "user"
-        }
-    )
+def test_register_duplicate_login(client, user_factory):
+    user = user_factory()
+    client.post("/API/v0.1/register", json=user.__dict__) # Используем user_data из фикстуры
 
     # Попытка повторной регистрации с тем же логином
-    response = client.post("/API/v0.1/register", json={
-        "login": "testuser",
-        "fullname": "Test User",
-        "password": "password",
-        "role": "user"
-        }
-    )
+    response = client.post("/API/v0.1/register", json=user.__dict__) # Используем user_data из фикстуры
 
     assert response.status_code == 400
     assert response.json()["detail"] == "Такой логин уже существует."
