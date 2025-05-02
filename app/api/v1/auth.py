@@ -1,6 +1,6 @@
 from app.core.config import settings
 from app.database.db import get_session
-from app.schemas.user import UserCreate, Token
+from app.schemas.user import UserCreate, UserReturn, Token
 from app.models.user import User
 from app.core.security import get_password_to_hash, create_access_token, verify_password
 
@@ -12,6 +12,8 @@ from logging import Logger, getLogger
 from typing import Annotated
 
 router = APIRouter(tags=["auth"])
+
+oauth2_scheme = OAuth2PasswordRequestForm(tokenUrl="/API/v0.1/login")
 
 @router.post("/register", response_model=Token)
 def register(
@@ -70,8 +72,6 @@ def login(
     logger.info(f"Успешный вход для {form_data.username}")
     return {"access_token": access_token, "token_type": "bearer"}
 
-oauth2_scheme = OAuth2PasswordRequestForm(tokenUrl="/API/v0.1/login")
-
 def get_current_user(
         token: Annotated[str, Depends(oauth2_scheme)],
         session: Session = Depends(get_session)
@@ -87,3 +87,7 @@ def get_current_user(
     if user is None:
         raise HTTPException(status_code=401, detail="Пользователь не найден")
     return user
+
+@router.post("/me", response_model=UserReturn)
+def reads_user_me(current_user = Depends(get_current_user)) -> User:
+    return current_user
