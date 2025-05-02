@@ -49,9 +49,12 @@ def login(
 ) -> Token:
     logger.info(f"Попытка входа для login: {form_data.username}")
     db_user = session.query(User).filter(User.login == form_data.username).first()
-    if not db_user or not verify_password(form_data.password, db_user.hashed_password):
-        logger.warning(f"Неверный логин или пароль для {form_data.username}")
-        raise HTTPException(status_code=401, detail="Неверный логин или пароль")
+    if not db_user:
+        logger.warning(f"Неверный логин")
+        raise HTTPException(status_code=401, detail="Неверный логин")
+    if db_user and not verify_password(form_data.password, db_user.hashed_password):
+        logger.warning(f"Неверный пароль для {form_data.username}")
+        raise HTTPException(status_code=401, detail="Неверный пароль")
     access_token = create_access_token(data={"sub": db_user.login})
     logger.info(f"Успешный вход для {form_data.username}")
     return {"access_token": access_token, "token_type": "bearer"}
