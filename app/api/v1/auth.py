@@ -83,7 +83,7 @@ def get_current_user(
             raise HTTPException(status_code=401, detail="Неверный токен")
     except JWTError:
         raise HTTPException(status_code=401, detail="Неверный токен")
-    user = session.query(User.filter(User.login == login).first())
+    user = session.query(User).filter(User.login == login).first()
     if user is None:
         raise HTTPException(status_code=401, detail="Пользователь не найден")
     return user
