@@ -170,3 +170,4 @@ def test_user_not_found(client):
 def test_get_session(client):
     response = client.get("/API/v0.1/test_db_session")
     assert response.status_code == 200
+    assert response.json()["ok"] is True
