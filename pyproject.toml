@@ -19,6 +19,11 @@ dependencies = [
     "pytest-cov>=6.1.1",
 ]
 
+[project.optional-dependencies]
+dev = [
+    "coverage>=7.8.0",            # Для тестов
+]
+
 [build-system]
 requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
