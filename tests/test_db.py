@@ -9,7 +9,6 @@ from sqlalchemy.orm import sessionmaker
 # Если возникают проблемы с неправильным чтением URL в терминале выполнить команду - удаление переменной окружения >>> Get-ChildItem Env:TEST_DATABASE_URL
 
 # Используем тестовую БД
-#TEST_DATABASE_URL = "postgresql+psycopg2://postgres:P%40ssw0rd@192.168.31.168:5432/auth_test_db"
 engine = create_engine(settings.TEST_DATABASE_URL, echo=True)
 Session = sessionmaker(engine)
 
