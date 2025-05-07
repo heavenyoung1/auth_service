@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
+from jose import jwt
 
 import pytest
 
@@ -151,4 +152,11 @@ def test_get_current_user_invalid_token(client):
     logger.info(f"Response body: {response.json()}")
     assert response.status_code == 401
 
+# Тест для отработки нарушенной структуры токена
+def test_get_current_user_missing_sub(client):
 
+    # Создаём токен без "sub"
+    token = jwt.encode({}, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+    response = client.get("/API/v0.1/me", headers={"Authorization": f"Bearer {token}"})
+    assert response.status_code == 401
+    assert response.json()["detail"] == "Неверный токен"
