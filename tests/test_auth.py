@@ -3,12 +3,16 @@ from app.models.user import Base
 from app.database.db import get_session
 from app.core.config import settings
 
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 
 import pytest
+
+import logging
+
+logger = logging.getLogger(__name__)
 
 # Если в коде есть print, используй чтобы вывести Debug Response >>> pytest tests\test_auth.py -v -s
 # Настройка тестовой Базы Данных
@@ -120,8 +124,8 @@ def test_login_unexistent_user(client):
     assert response.status_code == 401
     assert response.json()["detail"] == "Неверный логин"
 
+# Тест - получение текущего пользователя
 def test_get_current_user(client, user_factory):
-
     user = user_factory()  # Создание данных пользователя из класса UserData
 
     # Регистрация пользователя 
@@ -141,5 +145,10 @@ def test_get_current_user(client, user_factory):
     response = client.get("/API/v0.1/me", headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == 200
 
+def test_get_current_user_invalid_token(client):
+    response = client.get("/API/v0.1/me", headers={"Authorization": f"Bearer invalidddd_token"})
+    logger.info(f"Status code: {response.status_code}")
+    logger.info(f"Response body: {response.json()}")
+    assert response.status_code == 401
 
 

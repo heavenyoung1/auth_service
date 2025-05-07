@@ -44,7 +44,7 @@ def test_verify_password_empty(test_password: Literal['test_password']):
     assert verify_password("", hashed_password) is False
 
 # ---------------- ТЕСТЫ ДЛЯ ТОКЕНА ---------------- #
-def test_create_access_token(test_data: dict[str, Any]):
+def test_create_access_token(test_data: dict):
     # Вызов функции 
     token = create_access_token(test_data)
 
@@ -59,7 +59,7 @@ def test_create_access_token(test_data: dict[str, Any]):
     assert "exp" in decoded, "Токен должен содержать срок действия"
     assert "iat" in decoded, "Токен должен содержать момент создания"
 
-def test_token_expiration(test_data: dict[str, Any]):
+def test_token_expiration(test_data: dict):
     # Вызов функции 
     token = create_access_token(test_data)
     decoded = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
