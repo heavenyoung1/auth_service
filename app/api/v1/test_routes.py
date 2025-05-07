@@ -1,3 +1,4 @@
+# pragma: no cover
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.database.db import get_session

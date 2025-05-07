@@ -1,5 +1,5 @@
 from app.api.v1.auth import router as auth_router
-from tests.test_routes import router as test_router
+from app.api.v1.test_routes import router as test_router
 
 from fastapi import FastAPI
 import uvicorn
