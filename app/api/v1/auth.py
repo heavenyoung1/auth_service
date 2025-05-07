@@ -89,5 +89,5 @@ def get_current_user(
     return user
 
 @router.get("/me", response_model=UserReturn)
-def reads_user_me(current_user = Depends(get_current_user)) -> User:
+def read_user_me(current_user = Depends(get_current_user)) -> User:
     return current_user

@@ -3,7 +3,7 @@ from app.models.user import Base
 from app.database.db import get_session
 from app.core.config import settings
 
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
@@ -12,7 +12,6 @@ import pytest
 
 # Если в коде есть print, используй чтобы вывести Debug Response >>> pytest tests\test_auth.py -v -s
 # Настройка тестовой Базы Данных
-#TEST_DATABASE_URL = "postgresql+psycopg2://postgres:P%40ssw0rd@192.168.31.168:5432/auth_test_db"
 engine = create_engine(settings.TEST_DATABASE_URL, echo=True)
 TestingSession = sessionmaker(engine)
 
@@ -121,18 +120,26 @@ def test_login_unexistent_user(client):
     assert response.status_code == 401
     assert response.json()["detail"] == "Неверный логин"
 
-# def test_get_current_user(client, user_factory):
-#     user = user_factory()  # Создание данных пользователя из класса UserData
-#     # Регистрация пользователя 
-#     client.post("/API/v0.1/register", json=user.__dict__)
-#     # Логин пользователя
-#     response = client.post("/API/v0.1/login", data={
-#         "username": user.login,
-#         "password": user.password
-#         }
-#     )
+def test_get_current_user(client, user_factory):
 
-#     token = response.json()["access_token"]
-#     response.client.get("/API/v0.1/me", headers={"Authorization": f"Bearer {token}"})
-#     assert response.status_code == 200
-    #FAILED tests/test_auth.py::test_get_current_user - AttributeError: 'Response' object has no attribute 'client'
+    user = user_factory()  # Создание данных пользователя из класса UserData
+
+    # Регистрация пользователя 
+    register_response = client.post("/API/v0.1/register", json=user.__dict__)
+    assert register_response.status_code == 200, f"Регистрация не удалась"
+
+    # Логин пользователя
+    login_response = client.post("/API/v0.1/login", data={
+        "username": user.login,
+        "password": user.password
+        }
+    )
+    login_response.status_code == 200, f"Логин не удался"
+    token = login_response.json()["access_token"]
+
+    # Запрос данные текущего пользователя
+    response = client.get("/API/v0.1/me", headers={"Authorization": f"Bearer {token}"})
+    assert response.status_code == 200
+
+
+
