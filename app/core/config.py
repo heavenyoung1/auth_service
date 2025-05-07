@@ -8,6 +8,12 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
+    PG_HOST: str
+    PG_DB: str
+    PG_PORT: str
+    PG_USER: str
+    PG_PASSWORD: str
+
     model_config = SettingsConfigDict(
         env_file = ".env",
         env_file_encoding = "utf-8"

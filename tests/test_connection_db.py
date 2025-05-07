@@ -1,14 +1,16 @@
 import psycopg2
 from psycopg2 import OperationalError
 
+from app.core.config import settings
+
 def test_connection():
     try:
         conn = psycopg2.connect(
-            host="192.168.31.168",
-            port="5432",
-            user="postgres",
-            password="P@ssw0rd",
-            database="auth_db"
+            host=settings.PG_HOST,
+            database=settings.PG_DB,
+            port=settings.PG_PORT,
+            user=settings.PG_USER,
+            password=settings.PG_PASSWORD,
         )
         print("✅ Успешное подключение к PostgreSQL!")
         
