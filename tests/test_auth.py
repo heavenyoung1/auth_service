@@ -160,3 +160,9 @@ def test_get_current_user_missing_sub(client):
     response = client.get("/API/v0.1/me", headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == 401
     assert response.json()["detail"] == "Неверный токен"
+
+def test_user_not_found(client):
+    token = jwt.encode({"sub": "nonexist_user"}, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+    response = client.get("/API/v0.1/me", headers={"Authorization": f"Bearer {token}"})
+    assert response.status_code == 401
+    assert response.json()["detail"] == "Пользователь не найден"
