@@ -166,3 +166,7 @@ def test_user_not_found(client):
     response = client.get("/API/v0.1/me", headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == 401
     assert response.json()["detail"] == "Пользователь не найден"
+
+def test_get_session(client):
+    response = client.get("/API/v0.1/test_db_session")
+    assert response.status_code == 200
