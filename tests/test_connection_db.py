@@ -4,6 +4,7 @@ from psycopg2 import OperationalError
 from app.core.config import settings
 
 def test_connection():
+    conn = None # Инициализация переменной
     try:
         conn = psycopg2.connect(
             host=settings.PG_HOST,
