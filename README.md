@@ -15,3 +15,6 @@ uv pip install fastapi sqlalchemy --upgrade --sync --system
 
 # Установка всего из pyproject.toml:
 uv pip install --all --system
+
+# Синхронизация виртуального окружения (Это установит все зависимости, указанные в uv.lock, в вашу виртуальную среду.)
+uv sync
