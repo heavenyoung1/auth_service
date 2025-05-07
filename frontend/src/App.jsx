@@ -5,7 +5,7 @@ function App() {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    fetch("/api/test")
+    fetch("/api/test") // Прокси преобразует это в /API/v0.1/test
       .then((response) => response.json())
       .then((data) => setMessage(data.message))
       .catch((error) => console.error("Ошибка:", error));
