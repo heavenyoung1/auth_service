@@ -8,14 +8,11 @@ from fastapi.testclient import TestClient
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 from jose import jwt
-
 import pytest
-
 import logging
 
 logger = logging.getLogger(__name__)
 
-# Если в коде есть print, используй чтобы вывести Debug Response >>> pytest tests\test_auth.py -v -s
 # Настройка тестовой Базы Данных
 engine = create_engine(settings.TEST_DATABASE_URL, echo=True)
 TestingSession = sessionmaker(engine)
