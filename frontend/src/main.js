@@ -33,12 +33,18 @@ signUpForm.addEventListener("submit", async (e) => {
       body: JSON.stringify({ login, fullname, password, role }),
     });
     const data = await response.json();
-    responseElement.textContent = data.message || data.detail || "Регистрация успешна!";
-    responseElement.style.color = data.message ? "green" : "red";
-  } catch (error) {
-    responseElement.textContent = "Ошибка: " + error.message;
+    console.log("Ответ от сервера:", data); // Отладка
+  if (response.ok) {
+    responseElement.textContent = "Регистрация успешна! Вы получили токен.";
+    responseElement.style.color = "green";
+  } else {
+    responseElement.textContent = data.detail || "Ошибка регистрации";
     responseElement.style.color = "red";
   }
+} catch (error) {
+  responseElement.textContent = "Ошибка: " + error.message;
+  responseElement.style.color = "red";
+}
   });
   
 
