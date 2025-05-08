@@ -4,10 +4,10 @@
   --main-color: #6dd5ed;
   --secondary-color: #2193b0;
   --gradient: linear-gradient(
-    135deg,
-    var(--main-color),
-    var(--secondary-color)
-  );
+      135deg, 
+      var(--main-color), 
+      var(--secondary-color)
+      );
 }
 
 * {
@@ -118,6 +118,12 @@ input {
   margin: 8px 0;
   width: 100%;
   font-family: inherit;
+  transition: box-shadow 0.3s ease;
+}
+
+input:focus {
+  box-shadow: 0 0 5px var(--main-color);
+  outline: none;
 }
 
 .container {
@@ -239,6 +245,13 @@ input {
 
 .container.right-panel-active .overlay-right {
   transform: translateY(20%);
+}
+
+.message {
+  text-align: center;
+  margin-top: 10px;
+  font-size: 14px;
+  color: #333;
 }
 
 @media (min-width: 768px) {
