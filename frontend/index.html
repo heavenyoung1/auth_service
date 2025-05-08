@@ -1,4 +1,4 @@
-<!doctype html>
+<!-- <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -9,5 +9,33 @@
   <body>
     <div id="app"></div>
     <script type="module" src="/src/main.js"></script>
+  </body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Auth Service</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <h1>Сервис авторизации</h1>
+      <form id="login-form">
+        <div>
+          <label for="username">Имя пользователя: </label>
+          <input type="text" id="username" name="username" />
+        </div>
+        <div>
+          <label for="password">Пароль: </label>
+          <input type="password" id="password" name="password" />
+        </div>
+        <button type="submit">Войти</button>
+      </form>
+      <p id="response"></p>
+    </div>
+    <script type="module" src="/main.js"></script>
   </body>
 </html>
