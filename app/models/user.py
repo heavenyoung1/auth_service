@@ -23,12 +23,3 @@ class User(Base):
     def __repr__(self) -> str:
         return f"Метод __repr__: User(id={self.id!r}, login={self.login!r}, fullname={self.fullname!r})"
 
-# Для тестов
-user = User(id=1, login="heavenyoung", fullname="Ivan Petrov")
-
-#Для отладки вывод метода __repr__
-print(user)
-
-User.__tablename__
-User.__mapper__
-
