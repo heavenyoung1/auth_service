@@ -34,17 +34,32 @@ signUpForm.addEventListener("submit", async (e) => {
     });
     const data = await response.json();
     console.log("Ответ от сервера:", data); // Отладка
-  if (response.ok) {
-    responseElement.textContent = "Регистрация успешна! Вы получили токен.";
-    responseElement.style.color = "green";
-  } else {
-    responseElement.textContent = data.detail || "Ошибка регистрации";
+    if (response.ok) {
+      responseElement.textContent = "Регистрация успешна! Вы получили токен.";
+      responseElement.style.color = "green";
+    } else {
+      // Обрабатываем ошибки валидации (status 422 и другие)
+      if (data.detail) {
+        // Если detail — это массив, извлекаем сообщения
+        if (Array.isArray(data.detail)) {
+          const errorMessages = data.detail.map((error) => {
+            const field = error.loc[error.loc.length - 1]; // Последний элемент в loc, например "login"
+            return `${field}: ${error.msg}`;
+          });
+          responseElement.textContent = errorMessages.join("; ");
+        } else {
+          // Если detail — строка
+          responseElement.textContent = data.detail;
+        }
+      } else {
+        responseElement.textContent = "Ошибка регистрации";
+      }
+      responseElement.style.color = "red";
+    }
+  } catch (error) {
+    responseElement.textContent = "Ошибка: " + error.message;
     responseElement.style.color = "red";
   }
-} catch (error) {
-  responseElement.textContent = "Ошибка: " + error.message;
-  responseElement.style.color = "red";
-}
   });
   
 
