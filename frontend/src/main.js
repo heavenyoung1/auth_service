@@ -34,21 +34,28 @@ signUpForm.addEventListener("submit", async (e) => {
     });
     const data = await response.json();
     console.log("Ответ от сервера:", data); // Отладка
+
     if (response.ok) {
       responseElement.textContent = "Регистрация успешна! Вы получили токен.";
       responseElement.style.color = "green";
     } else {
-      // Обрабатываем ошибки валидации (status 422 и другие)
       if (data.detail) {
-        // Если detail — это массив, извлекаем сообщения
         if (Array.isArray(data.detail)) {
           const errorMessages = data.detail.map((error) => {
-            const field = error.loc[error.loc.length - 1]; // Последний элемент в loc, например "login"
-            return `${field}: ${error.msg}`;
+            const field = error.loc[error.loc.length - 1];
+            let message = error.msg;
+            // Локализация сообщений
+            if (message.includes("String should have at least 6 characters")) {
+              message = "Логин должен содержать минимум 6 символов";
+            } else if (message.includes("String should have at least 4 characters")) {
+              message = "Пароль должен содержать минимум 4 символа";
+            } else if (message === "value is not a valid enumeration member") {
+              message = "Недопустимая роль";
+            }
+            return `${field}: ${message}`;
           });
           responseElement.textContent = errorMessages.join("; ");
         } else {
-          // Если detail — строка
           responseElement.textContent = data.detail;
         }
       } else {
@@ -61,7 +68,6 @@ signUpForm.addEventListener("submit", async (e) => {
     responseElement.style.color = "red";
   }
   });
-  
 
 // Обработка формы авторизации
 signInForm.addEventListener("submit", async (e) => {
