@@ -66,7 +66,7 @@ signUpForm.addEventListener("submit", async (e) => {
 // Обработка формы авторизации
 signInForm.addEventListener("submit", async (e) => {
   e.preventDefault();
-  const login = document.getElementById("login-login").value;
+  const username = document.getElementById("login-login").value;
   const password = document.getElementById("login-password").value;
   const responseElement = document.getElementById("login-response");
   responseElement.textContent = "Загрузка..."
@@ -75,7 +75,7 @@ signInForm.addEventListener("submit", async (e) => {
     const response = await fetch("/api/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ login, password }),
+      body: JSON.stringify({ username, password }),
     });
   const data = await response.json();
   responseElement.textContent = data.message || data.detail || "Успех!";
