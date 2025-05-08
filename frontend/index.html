@@ -17,6 +17,11 @@
             <input type="text" id="register-login" placeholder="Логин" required />
             <input type="text" id="register-name" placeholder="Имя и фамилия" required />
             <input type="password" id="register-password" placeholder="Пароль" required />
+            <select id="register-role" required>
+              <option value="" disabled selected>Выберите роль</option>
+              <option value="user">Пользователь</option>
+              <option value="admin">Администратор</option>
+            </select>
             <button type="submit">Зарегистрироваться</button>
             <p id="register-response" class="message"></p>
         </form>

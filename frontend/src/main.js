@@ -19,16 +19,18 @@ signInButton.addEventListener("click", () => {
 signUpForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const login = document.getElementById("register-login").value;
-  const username = document.getElementById("register-name").value;
+  const fullname = document.getElementById("register-name").value;
   const password = document.getElementById("register-password").value;
+  const role = document.getElementById("register-role").value;
   const responseElement = document.getElementById("register-response");
+  const inputs = signUpForm.querySelectorAll("input, select");
   responseElement.textContent = "Загрузка..."
 
   try {
     const response = await fetch("/api/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ login, username, password }),
+      body: JSON.stringify({ login, fullname, password, role }),
     });
     const data = await response.json();
     responseElement.textContent = data.message || data.detail || "Регистрация успешна!";
