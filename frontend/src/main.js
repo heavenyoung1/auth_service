@@ -84,6 +84,7 @@ signInForm.addEventListener("submit", async (e) => {
       body: JSON.stringify({ username, password }),
     });
   const data = await response.json();
+  console.log("Ответ от сервера:", data); // Отладка
   responseElement.textContent = data.message || data.detail || "Успех!";
   responseElement.style.color = data.message ? "green" : "red";
 } catch (error) {
