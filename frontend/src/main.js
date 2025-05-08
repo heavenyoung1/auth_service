@@ -78,12 +78,20 @@ signInForm.addEventListener("submit", async (e) => {
   responseElement.textContent = "Загрузка..."
 
   try {
+    // Создаём данные в формате application/x-www-form-urlencoded
+    const formData = new URLSearchParams();
+    formData.append("username", username);
+    formData.append("password", password);
+    
     const response = await fetch("/api/login", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password }),
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: formData,
     });
   const data = await response.json();
+  
   console.log("Ответ от сервера:", data); // Отладка
   responseElement.textContent = data.message || data.detail || "Успех!";
   responseElement.style.color = data.message ? "green" : "red";

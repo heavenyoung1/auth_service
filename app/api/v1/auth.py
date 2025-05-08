@@ -67,7 +67,7 @@ def login(
         logger.warning(f"Неверный пароль для {form_data.username}")
         raise HTTPException(status_code=401, detail="Неверный пароль")
     
-    # Генеарация токена
+    # Генерация токена
     access_token = create_access_token(data={"sub": db_user.login})
     logger.info(f"Успешный вход для {form_data.username}")
     return {"access_token": access_token, "token_type": "bearer"}
