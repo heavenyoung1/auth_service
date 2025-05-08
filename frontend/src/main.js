@@ -16,7 +16,7 @@ signInButton.addEventListener("click", () => {
 });
 
 // Обработка формы регистрации
-signInForm.addEventListener("submit", async (e) => {
+signUpForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const login = document.getElementById("register-login").value;
   const username = document.getElementById("register-name").value;
