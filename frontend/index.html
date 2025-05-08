@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
   <head>
     <meta charset="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -14,20 +14,22 @@
       <div class="form-container sign-up-container">
         <form>
           <h1>Регистрация</h1>
-            <input type="text" placeholder="Логин" />
-            <input type="text" placeholder="Имя и фамилия" />
-            <input type="password" placeholder="Пароль" />
-            <button onclick="return false;">Зарегистрироваться</button>
+            <input type="text" id="register-login" placeholder="Логин" required />
+            <input type="text" id="register-name" placeholder="Имя и фамилия" required />
+            <input type="password" id="register-password" placeholder="Пароль" required />
+            <button type="submit">Зарегистрироваться</button>
+            <p id="register-response" class="message"></p>
         </form>
       </div>
 
       <div class="form-container sign-in-container">
         <form>
           <h1>Авторизация</h1>
-          <input type="text" placeholder="Логин" />
-          <input type="password" placeholder="Пароль" />
+          <input type="text" id="login-username" placeholder="Логин" required/>
+          <input type="password" id="login-password" placeholder="Пароль" required />
           <a href="#">Забыли пароль?</a>
-          <button onclick="return false;">Войти</button>
+          <button type="submit">Войти</button>
+          <p id="login-response" class="message"></p>
         </form>
       </div>
 
