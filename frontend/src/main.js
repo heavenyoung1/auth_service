@@ -30,6 +30,15 @@ signInForm.addEventListener("submit", async (e) => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ login, username, password }),
     });
+    const data = await response.json();
+    responseElement.textContent = data.message || data.detail || "Регистрация успешна!";
+    responseElement.style.color = data.message ? "green" : "red";
+  } catch (error) {
+    responseElement.textContent = "Ошибка: " + error.message;
+    responseElement.style.color = "red";
+  }
+  });
+  
 
 // Обработка формы авторизации
 signInForm.addEventListener("submit", async (e) => {
