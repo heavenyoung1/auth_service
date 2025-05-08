@@ -1,38 +1,20 @@
-// import './style.css'
-// import javascriptLogo from './javascript.svg'
-// import viteLogo from '/vite.svg'
-// import { setupCounter } from './counter.js'
-
-// document.querySelector('#app').innerHTML = `
-//   <div>
-//     <a href="https://vite.dev" target="_blank">
-//       <img src="${viteLogo}" class="logo" alt="Vite logo" />
-//     </a>
-//     <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank">
-//       <img src="${javascriptLogo}" class="logo vanilla" alt="JavaScript logo" />
-//     </a>
-//     <h1>Hello Vite!</h1>
-//     <div class="card">
-//       <button id="counter" type="button"></button>
-//     </div>
-//     <p class="read-the-docs">
-//       Click on the Vite logo to learn more
-//     </p>
-//   </div>
-// `
-
-// setupCounter(document.querySelector('#counter'))
-
 import "./style.css";
 
-document.getElementById("login-form").addEventListener("submit", async (e) => {
+const form = document.getElementById("login-form");
+const usernameInput = document.getElementById("username");
+const passwordInput = document.getElementById("password");
+const responseElement = document.getElementById("response");
+const submitButton = form.querySelector("button");
+
+form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const username = document.getElementById("username").value;
-  const password = document.getElementById("password").value;
-  const responseElement = document.getElementById("response");
-
-  responseElement.textContent = "Загрузка...";
+  // Отключаем форму во время запроса
+  usernameInput.disabled = true;
+  passwordInput.disabled = true;
+  submitButton.disabled = true;
+  submitButton.textContent = "Loading...";
+  responseElement.textContent = "";
 
   try {
     const response = await fetch("/api/login", {
@@ -40,11 +22,22 @@ document.getElementById("login-form").addEventListener("submit", async (e) => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ username, password }),
+      body: JSON.stringify({
+        username: usernameInput.value,
+        password: passwordInput.value,
+      }),
     });
     const data = await response.json();
-    responseElement.textContent = data.message || data.detail || "Успех!";
+    responseElement.textContent = data.message || data.detail || "Success!";
+    responseElement.style.color = data.message ? "green" : "red";
   } catch (error) {
-    responseElement.textContent = "Ошибка: " + error.message;
+    responseElement.textContent = "Error: " + error.message;
+    responseElement.style.color = "red";
+  } finally {
+    // Включаем форму обратно
+    usernameInput.disabled = false;
+    passwordInput.disabled = false;
+    submitButton.disabled = false;
+    submitButton.textContent = "Sign In";
   }
 });
