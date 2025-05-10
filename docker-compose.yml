@@ -48,6 +48,7 @@ services:
 
 volumes:
   postgres_data:
+  portainer_data:
 
 networks:
   app-network:
@@ -60,5 +61,3 @@ networks:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer_data:/data
-volumes:
-  portainer_data:
