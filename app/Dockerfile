@@ -6,7 +6,7 @@ WORKDIR /app
 
 # Копируем requirements.txt и устанавливаем зависимости
 COPY temp-requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r temp-requirements.txt
 
 # Копируем весь код бэкенда
 COPY . .
