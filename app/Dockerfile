@@ -5,8 +5,8 @@ FROM python:3.13-slim
 WORKDIR /app
 
 # Копируем requirements.txt и устанавливаем зависимости
-COPY temp-requirements.txt .
-RUN pip install --no-cache-dir -r temp-requirements.txt
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Копируем весь код бэкенда
 COPY . .
