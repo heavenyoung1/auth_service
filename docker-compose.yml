@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   backend:
     build:
@@ -46,14 +48,6 @@ services:
     networks:
       - app-network
 
-volumes:
-  postgres_data:
-  portainer_data:
-
-networks:
-  app-network:
-    driver: bridge
-
   portainer:
     image: portainer/portainer-ce
     ports:
@@ -61,3 +55,13 @@ networks:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer_data:/data
+    networks:
+      - app-network
+
+volumes:
+  postgres_data:
+  portainer_data:
+
+networks:
+  app-network:
+    driver: bridge
