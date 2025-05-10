@@ -16,9 +16,9 @@ jobs:
       postgres:
         image: postgres:15
         env:
-          POSTGRES_USER: ${{ vars.POSTGRES_USER || 'test_user' }}
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD || 'test_password' }}
-          POSTGRES_DB: ${{ vars.POSTGRES_DB || 'test_db' }}
+          POSTGRES_USER: ${{ vars.PG_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.PG_PASSWORD  }}
+          POSTGRES_DB: ${{ vars.PG_DB }}
         ports:
           - 5432:5432
         options: >-
@@ -39,11 +39,11 @@ jobs:
       - name: Install dependencies
         run: |
           cd backend
-          pip install -r requirements.txt
+          pip install -r temp-requirements.txt
 
       - name: Run backend tests
         env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL || 'DATABASE_URL' }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
           cd backend
           pytest tests/
