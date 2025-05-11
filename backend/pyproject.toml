@@ -24,7 +24,3 @@ dev = [
     "coverage>=7.8.0",            # Для тестов
 ]
 
-[build-system]
-requires = ["setuptools", "wheel"]
-build-backend = "setuptools.build_meta"
-

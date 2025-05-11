@@ -61,7 +61,7 @@ sudo apt install python3.12-venv
 uv venv
 source .venv/bin/activate
 ```
-### Установка UV в виртуальное окружение
+### Установква зависимостей из файла pyproject.toml
 ```
-pip install uv
+uv sync
 ```
