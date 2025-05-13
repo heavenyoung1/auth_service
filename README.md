@@ -177,9 +177,10 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
 # Запуск приложения при помощи Docker
 
-### Установка и запуск docker-compose
+### Установка и запуск docker-compose 
+Важно! Устанавливать через curl, из GitHub. Данного пакета нет в apt.
 ```
-sudo apt install docker-compose -y
-docker-compose up --build -d
+sudo curl -L "https://github.com/docker/compose/releases/download/v2.36.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+
 ```
 Для удобства 
