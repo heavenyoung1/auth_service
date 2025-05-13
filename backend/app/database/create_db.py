@@ -5,7 +5,7 @@ from app.core.config import settings
 
 
 def create_database():
-    conn = None # Инициализация переменной
+    connection = None # Инициализация переменной
     try:
         connection = psycopg2.connect(
             host=settings.PG_HOST,
