@@ -7,15 +7,18 @@ WORKDIR /app
 # Устанавливаем UV
 RUN pip install uv
 
-# Копируем requirements.txt и устанавливаем зависимости
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Копируем pyproject.toml и другие файлы для установки зависимостей
+COPY pyproject.toml .
+COPY backend/ .
 
-# Копируем весь код бэкенда
-COPY . .
+# Устанавливаем зависимости с помощью UV
+RUN uv sync --no-dev
 
 # Добавление рабочей директории
 ENV PYTHONPATH=/app
 
+# Указываем порт, который будет использоваться
+EXPOSE 8000
+
 # Запускаем FastAPI с помощью Uvicorn
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uv", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
