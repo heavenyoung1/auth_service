@@ -3,14 +3,15 @@ version: '3.8'
 services:
   backend:
     build:
-      context: ./app
+      context: ./backend # Исправляем путь на актуальный
       dockerfile: Dockerfile
     ports:
       - "8000:8000"
     env_file:
-      - .env
+      - ./backend/.env # Указываем точный путь к .env
     depends_on:
-      - db
+      db:
+        condition: service_healthy  # Ждём, пока база данных будет готова
     networks:
       - app-network
 
@@ -33,6 +34,11 @@ services:
       POSTGRES_DB: ${PG_DB}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:  # Добавляем проверку состояния
+      test: ["CMD-SHELL", "pg_isready -U ${PG_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     networks:
       - app-network
 
