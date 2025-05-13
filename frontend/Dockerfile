@@ -6,7 +6,9 @@ WORKDIR /app
 
 # Копируем package.json и package-lock.json для установки зависимостей
 COPY package.json package-lock.json ./
-RUN npm install --production
+
+# Устанавливаем все зависимости, включая devDependencies, для сборки
+RUN npm install
 
 # Копируем весь исходный код фронтенда
 COPY . .
