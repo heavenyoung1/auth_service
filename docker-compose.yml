@@ -32,8 +32,6 @@ services:
       POSTGRES_USER: ${PG_USER}
       POSTGRES_PASSWORD: ${PG_PASSWORD}
       POSTGRES_DB: ${PG_DB}
-    env_file:
-    - ./backend/.env
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:  # Добавляем проверку состояния
