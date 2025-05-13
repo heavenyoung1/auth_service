@@ -12,6 +12,10 @@ app = FastAPI(
             version="0.1",
 )
 
+@app.get("/")
+def read_root():
+    return {"Hello": "World"}
+
 app.include_router(auth_router, prefix="/API/v0.1")
 app.include_router(test_router, prefix="/API/v0.1")
 app.include_router(base_router, prefix="/API/v0.1")
