@@ -43,7 +43,8 @@ jobs:
       - name: Install backend dependencies
         run: |
           cd backend
-          uv sync  # Убираем --no-dev для установки dev-зависимостей, включая pytest
+          uv sync
+          ls -la .venv/bin  # Отладка: проверяем, что pytest установлен
 
       - name: Run backend tests
         env:
@@ -52,6 +53,7 @@ jobs:
           TEST_DATABASE_URL: postgresql+psycopg2://postgres:P%40ssw0rd@localhost:5432/auth_test_db
         run: |
           cd backend
+          source .venv/bin/activate  # Активируем виртуальную среду
           pytest tests/ --cov=app --cov-report=xml
 
       - name: Upload coverage report
