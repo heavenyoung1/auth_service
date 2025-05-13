@@ -45,16 +45,18 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 uv --version
 ```
 
+Перейдите в директорию, куда вы хотите клонировать репозиторий
+
 ### Клонирование репозитория
 ```
 git clone https://github.com/heavenyoung1/auth_service.git
-cd your-fastapi-project 
 ```
 
-### Установка виртуального окружения Python
-``` 
-sudo apt install python3.12-venv
+Важно! Переоткройте терминал и продолжите выполнение, открыв клонированный репозиторий и перейдя в папку /backend/ следующей командой
 ```
+cd /ваш_путь/auth_service/backend
+```
+
 ### Создание виртуального окружения при помощи UV и его активация
 ```
 uv venv
