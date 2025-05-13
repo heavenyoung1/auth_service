@@ -120,3 +120,43 @@ PG_PORT="5432"
 PG_USER="dbuser"
 PG_PASSWORD="securepass123"
 ```
+
+## Работа с Docker
+
+### Создание Docker-сети
+```
+docker network create auth-network
+```
+
+### Настройка и запуск контейнера PostgreSQL
+```
+docker run -d \
+  --name auth-postgres \
+  --network auth-network \
+  -e POSTGRES_USER=admin \
+  -e POSTGRES_PASSWORD=secretpass123 \
+  -e POSTGRES_DB=auth_db \
+  -p 5432:5432 \
+  postgres:latest
+  ```
+
+### Настройка и запуск контейнера PgAdmin
+```
+docker run -d \
+  --name pgadmin \
+  --network auth-network \
+  -e PGADMIN_DEFAULT_EMAIL=admin@example.com \
+  -e PGADMIN_DEFAULT_PASSWORD=adminpass123 \
+  -p 8080:80 \
+  dpage/pgadmin4
+  ```
+
+### Проверка создания контейнеров
+```
+docker ps
+```
+
+### Запуск скрипта для создания БД
+```
+python -m app.database.create_db
+```
