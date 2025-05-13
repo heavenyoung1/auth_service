@@ -160,3 +160,17 @@ docker ps
 ```
 python -m app.database.create_db
 ```
+
+### Запуск тестов
+```
+pytest tests -v
+```
+
+### Запустите Uvicorn с явным указанием хоста 
+```
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+```
+`--host 0.0.0.0` разрешает подключения со всех интерфейсов
+
+`--port 8000` явное указание порта
+
