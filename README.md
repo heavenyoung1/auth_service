@@ -174,3 +174,12 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
 `--port 8000` явное указание порта
 
+
+# Запуск приложения при помощи Docker
+
+### Установка и запуск docker-compose
+```
+sudo apt install docker-compose -y
+docker-compose up --build -d
+```
+Для удобства 
