@@ -83,6 +83,8 @@ nano .env
 ```
 4. Добавьте в файл следующие переменные окружения, заменив значения на ваши данные:
 ```
+!!! Для docker-compose вместо <host> прописать название сервера, в данном случае db
+
 # URL для подключения к основной базе данных
 DATABASE_URL="postgresql+psycopg2://<user>:<password>@<host>:<port>/<database_name>"
 
