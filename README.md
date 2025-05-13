@@ -33,6 +33,12 @@ sudo apt install python3 python3-pip python3-venv -y
 python3 --version
 ```
 
+### Установка curl, необходимого для менеджера пакетов uv
+```
+sudo apt install curl
+curl --version
+```
+
 ### Установка UV - менеджера управления зависимостями
 ```
 curl -LsSf https://astral.sh/uv/install.sh | sh
