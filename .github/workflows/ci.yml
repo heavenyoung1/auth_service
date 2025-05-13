@@ -43,7 +43,7 @@ jobs:
       - name: Install backend dependencies
         run: |
           cd backend
-          uv sync --no-dev
+          uv sync  # Убираем --no-dev для установки dev-зависимостей, включая pytest
 
       - name: Run backend tests
         env:
