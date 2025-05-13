@@ -4,6 +4,9 @@ FROM python:3.13-slim
 # Устанавливаем рабочую директорию
 WORKDIR /app
 
+# Устанавливаем UV
+RUN pip install uv
+
 # Копируем requirements.txt и устанавливаем зависимости
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
