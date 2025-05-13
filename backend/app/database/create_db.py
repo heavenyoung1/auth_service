@@ -9,7 +9,7 @@ def create_database():
     try:
         connection = psycopg2.connect(
             host=settings.PG_HOST,
-            database=settings.PG_DB,
+            database="postgres",
             port=settings.PG_PORT,
             user=settings.PG_USER,
             password=settings.PG_PASSWORD,
