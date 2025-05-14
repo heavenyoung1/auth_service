@@ -115,7 +115,7 @@ PG_PORT="<port>"
 PG_USER="<username>"
 PG_PASSWORD="<password>"
 ```
-5. Cохраните файл и закройте редактор нажмите `Ctrl+O`, затем `Enter`
+5. Cохраните файл и закройте редактор нажмите `Ctrl + O`, затем `Enter`
 
 ### Пример заполнения файла .env
 
@@ -139,7 +139,7 @@ PG_PASSWORD="securepass123"
 
 ## Работа с Docker
 
-### Создание Docker-сети
+### Создание Docker сети
 ```
 docker network create auth-network
 ```
@@ -154,7 +154,7 @@ docker run -d \
   -e POSTGRES_DB=auth_db \
   -p 5432:5432 \
   postgres:latest
-  ```
+```
 
 ### Настройка и запуск контейнера PgAdmin
 ```
@@ -165,7 +165,7 @@ docker run -d \
   -e PGADMIN_DEFAULT_PASSWORD=adminpass123 \
   -p 8080:80 \
   dpage/pgadmin4
-  ```
+```
 
 ### Проверка создания контейнеров
 ```
