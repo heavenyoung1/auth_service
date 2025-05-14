@@ -1,3 +1,4 @@
+---
 name: CI Pipeline
 
 on:
@@ -48,21 +49,23 @@ jobs:
 
       - name: Install uv
         run: |
-          pip install uv --upgrade  # Устанавливаем последнюю версию uv
-          uv --version  # Проверяем версию uv
+          pip install uv --upgrade
+          uv --version
 
       - name: Install backend dependencies
         run: |
           cd backend
-          uv sync --extra dev  # Явно устанавливаем dev-зависимости
-          ls -la .venv/bin  # Проверяем, что pytest установлен
-          uv run -- python -m pytest --version  # Проверяем доступность pytest
+          uv sync --extra dev
+          ls -la .venv/bin
+          uv run -- python -m pytest --version
 
       - name: Run backend tests
         env:
           SECRET_KEY: your-very-secret-key-123456789
-          DATABASE_URL: postgresql+psycopg2://postgres:P%40ssw0rd@localhost:5432/auth_db
-          TEST_DATABASE_URL: postgresql+psycopg2://postgres:P%40ssw0rd@localhost:5432/auth_test_db
+          DATABASE_URL: >-
+            postgresql+psycopg2://postgres:P%40ssw0rd@localhost:5432/auth_db
+          TEST_DATABASE_URL: >-
+            postgresql+psycopg2://postgres:P%40ssw0rd@localhost:5432/auth_test_db
           PG_HOST: localhost
           PG_PORT: 5432
           PG_USER: postgres
@@ -70,7 +73,7 @@ jobs:
           PG_DB: auth_db
         run: |
           cd backend
-          uv run -- python -m pytest tests/ --cov=app --cov-report=xml  # Используем модуль pytest
+          uv run -- python -m pytest tests/ --cov=app --cov-report=xml
 
       - name: Upload coverage report
         uses: codecov/codecov-action@v4
