@@ -1,44 +1,62 @@
 import { fireEvent, screen, waitFor } from '@testing-library/dom';
 import { JSDOM } from 'jsdom';
+import main from '../main.js'; // Импортируем main.js как модуль
 
-// Имитируем DOM
-const dom = new JSDOM(`
-  <!DOCTYPE html>
-  <html>
-    <body>
-      <button id="signUp">Sign Up</button>
-      <button id="signIn">Sign In</button>
-      <div id="container"></div>
-      <form id="sign-up-form" data-testid="sign-up-form">
-        <input id="register-login" value="testuser" />
-        <input id="register-name" value="Test User" />
-        <input id="register-password" value="pass123" />
-        <select id="register-role">
-          <option value="user">User</option>
-        </select>
-        <div id="register-response"></div>
-      </form>
-      <form id="sign-in-form" data-testid="sign-in-form">
-        <input id="login-login" value="testuser" />
-        <input id="login-password" value="pass123" />
-        <div id="login-response"></div>
-      </form>
-    </body>
-  </html>
-`);
+let dom;
+beforeEach(() => {
+  dom = new JSDOM(
+    `
+    <!DOCTYPE html>
+    <html>
+      <body>
+        <button id="signUp">Sign Up</button>
+        <button id="signIn">Sign In</button>
+        <div id="container"></div>
+        <form id="sign-up-form" data-testid="sign-up-form">
+          <input id="register-login" value="testuser" />
+          <input id="register-name" value="Test User" />
+          <input id="register-password" value="pass123" />
+          <select id="register-role">
+            <option value="user">User</option>
+          </select>
+          <div id="register-response"></div>
+        </form>
+        <form id="sign-in-form" data-testid="sign-in-form">
+          <input id="login-login" value="testuser" />
+          <input id="login-password" value="pass123" />
+          <div id="login-response"></div>
+        </form>
+      </body>
+    </html>
+    `,
+    { runScripts: "dangerously", resources: "usable" }
+  );
 
-// Устанавливаем глобальный объект window
-global.window = dom.window;
-global.document = dom.window.document;
+  global.window = dom.window;
+  global.document = dom.window.document;
 
-// Импортируем main.js после настройки DOM
-beforeAll(() => {
-  require('../main.js');
-  const event = new Event('DOMContentLoaded');
+  // Добавляем отладочный вывод содержимого DOM
+  console.log('DOM body:', document.body.innerHTML);
+
+  // Выполняем код main.js вручную
+  main();
+
+  // Эмулируем событие DOMContentLoaded
+  const event = new dom.window.Event('DOMContentLoaded');
   global.document.dispatchEvent(event);
+
+  // Убедимся, что элементы присутствуют
+  console.log('signUpButton:', document.getElementById('signUp'));
+  console.log('signInButton:', document.getElementById('signIn'));
 });
 
-// Мокаем fetch
+afterEach(() => {
+  jest.restoreAllMocks();
+  global.window = undefined;
+  global.document = undefined;
+  dom = null; // Очищаем DOM
+});
+
 beforeEach(() => {
   jest.spyOn(global, 'fetch').mockImplementation(() =>
     Promise.resolve({
@@ -47,10 +65,6 @@ beforeEach(() => {
       json: () => Promise.resolve({ message: 'Успех!' }),
     })
   );
-});
-
-afterEach(() => {
-  jest.restoreAllMocks();
 });
 
 describe('Frontend Tests', () => {
@@ -77,7 +91,8 @@ describe('Frontend Tests', () => {
   });
 
   test('Ошибка при регистрации (короткий пароль)', async () => {
-    document.getElementById('register-password').value = '123';
+    const passwordInput = screen.getByTestId('sign-up-form').querySelector('#register-password');
+    fireEvent.change(passwordInput, { target: { value: '123' } });
     const form = screen.getByTestId('sign-up-form');
     jest.spyOn(global, 'fetch').mockImplementation(() =>
       Promise.resolve({

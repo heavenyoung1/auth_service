@@ -1,11 +1,22 @@
-import "./style.css";
-
-document.addEventListener("DOMContentLoaded", () => {
+// src/main.js
+export default function init() {
   const signUpButton = document.getElementById("signUp");
   const signInButton = document.getElementById("signIn");
   const container = document.getElementById("container");
   const signInForm = document.getElementById("sign-in-form");
   const signUpForm = document.getElementById("sign-up-form");
+
+  // Проверка на наличие элементов
+  if (!signUpButton || !signInButton || !container || !signInForm || !signUpForm) {
+    console.error("One or more DOM elements not found:", {
+      signUpButton,
+      signInButton,
+      container,
+      signInForm,
+      signUpForm,
+    });
+    return;
+  }
 
   // Обработка слайда формы регистрации/авторизации
   signUpButton.addEventListener("click", () => {
@@ -24,8 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const password = document.getElementById("register-password").value;
     const role = document.getElementById("register-role").value;
     const responseElement = document.getElementById("register-response");
-    const inputs = signUpForm.querySelectorAll("input, select");
-    responseElement.textContent = "Загрузка..."
+    responseElement.textContent = "Загрузка...";
 
     try {
       const response = await fetch("/api/register", {
@@ -34,7 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
         body: JSON.stringify({ login, fullname, password, role }),
       });
       const data = await response.json();
-      console.log("Ответ от сервера:", data); // Отладка
+      console.log("Ответ от сервера:", data);
 
       if (response.ok) {
         responseElement.textContent = "Регистрация успешна! Вы получили токен.";
@@ -45,7 +55,6 @@ document.addEventListener("DOMContentLoaded", () => {
             const errorMessages = data.detail.map((error) => {
               const field = error.loc[error.loc.length - 1];
               let message = error.msg;
-              // Локализация сообщений
               if (message.includes("String should have at least 6 characters")) {
                 message = "Логин должен содержать минимум 6 символов";
               } else if (message.includes("String should have at least 4 characters")) {
@@ -68,7 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
       responseElement.textContent = "Ошибка: " + error.message;
       responseElement.style.color = "red";
     }
-    });
+  });
 
   // Обработка формы авторизации
   signInForm.addEventListener("submit", async (e) => {
@@ -76,14 +85,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const username = document.getElementById("login-login").value;
     const password = document.getElementById("login-password").value;
     const responseElement = document.getElementById("login-response");
-    responseElement.textContent = "Загрузка..."
+    responseElement.textContent = "Загрузка...";
 
     try {
-      // Создаём данные в формате application/x-www-form-urlencoded
       const formData = new URLSearchParams();
       formData.append("username", username);
       formData.append("password", password);
-      
+
       const response = await fetch("/api/login", {
         method: "POST",
         headers: {
@@ -91,15 +99,19 @@ document.addEventListener("DOMContentLoaded", () => {
         },
         body: formData,
       });
-    const data = await response.json();
-    
-    console.log("Ответ от сервера:", data); // Отладка
-    responseElement.textContent = data.message || data.detail || "Успех!";
-    responseElement.style.color = data.message ? "green" : "red";
-  } catch (error) {
-    responseElement.textContent = "Ошибка: " + error.message;
-    responseElement.style.color = "red";
-  }
-  });
+      const data = await response.json();
 
-});
+      console.log("Ответ от сервера:", data);
+      responseElement.textContent = data.message || data.detail || "Успех!";
+      responseElement.style.color = data.message ? "green" : "red";
+    } catch (error) {
+      responseElement.textContent = "Ошибка: " + error.message;
+      responseElement.style.color = "red";
+    }
+  });
+}
+
+// Выполняем функцию при загрузке, если это основной модуль
+if (typeof window !== 'undefined' && window.document) {
+  init();
+}
