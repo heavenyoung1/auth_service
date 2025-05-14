@@ -39,8 +39,9 @@ jobs:
 
       - name: Debug: Check init.sql in repository
         run: |
-          ls -l backend/app/database/init.sql || echo "File not found"
-          cat backend/app/database/init.sql || echo "Cannot read file"
+          set -e
+          ls -l "backend/app/database/init.sql" || echo "File not found"
+          cat "backend/app/database/init.sql" || echo "Cannot read file"
 
       - name: Set up Python
         uses: actions/setup-python@v5
