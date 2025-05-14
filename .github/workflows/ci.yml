@@ -22,7 +22,7 @@ jobs:
         ports:
           - 5432:5432
         volumes:
-          - ./backend/database/init.sql:/docker-entrypoint-initdb.d/init.sql
+          - ./backend/app/database/init.sql:/docker-entrypoint-initdb.d/init.sql
         options: >-
           --health-start-period 30s
           --health-cmd pg_isready
