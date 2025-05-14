@@ -22,8 +22,6 @@ jobs:
           POSTGRES_DB: auth_db
         ports:
           - 5432:5432
-        volumes:
-          - ./backend/app/database/init.sql:/docker-entrypoint-initdb.d/init.sql
         options: >-
           --health-start-period 30s
           --health-cmd pg_isready
@@ -37,11 +35,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Debug: Check init.sql in repository
+      - name: Create test database
         run: |
-          set -e
-          ls -l "backend/app/database/init.sql" || echo "File not found"
-          cat "backend/app/database/init.sql" || echo "Cannot read file"
+          # Убедимся, что PostgreSQL готов принимать подключения
+          until pg_isready -h localhost -p 5432 -U postgres; do
+            echo "Waiting for PostgreSQL to be ready..."
+            sleep 2
+          done
+          # Создаём базу auth_test_db
+          psql -h localhost -p 5432 -U postgres -c "CREATE DATABASE auth_test_db;"
+        env:
+          PGPASSWORD: P@ssw0rd
 
       - name: Set up Python
         uses: actions/setup-python@v5
