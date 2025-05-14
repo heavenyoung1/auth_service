@@ -9,7 +9,7 @@ const dom = new JSDOM(`
       <button id="signUp">Sign Up</button>
       <button id="signIn">Sign In</button>
       <div id="container"></div>
-      <form id="sign-up-form">
+      <form id="sign-up-form" data-testid="sign-up-form">
         <input id="register-login" value="testuser" />
         <input id="register-name" value="Test User" />
         <input id="register-password" value="pass123" />
@@ -18,12 +18,11 @@ const dom = new JSDOM(`
         </select>
         <div id="register-response"></div>
       </form>
-      <form id="sign-in-form">
+      <form id="sign-in-form" data-testid="sign-in-form">
         <input id="login-login" value="testuser" />
         <input id="login-password" value="pass123" />
         <div id="login-response"></div>
       </form>
-      <script src="/main.js"></script>
     </body>
   </html>
 `);
@@ -31,23 +30,30 @@ const dom = new JSDOM(`
 // Устанавливаем глобальный объект window
 global.window = dom.window;
 global.document = dom.window.document;
+
+// Импортируем main.js после настройки DOM
 beforeAll(() => {
-    fetch.resetMocks(); // Сначала мок
-    require('../main.js');
-  });
+  require('../main.js');
+  const event = new Event('DOMContentLoaded');
+  global.document.dispatchEvent(event);
+});
 
 // Мокаем fetch
 beforeEach(() => {
-    fetch.resetMocks();
-    fetch.mockResponseOnce(JSON.stringify({ message: 'Успех!' }));
-  });
+  jest.spyOn(global, 'fetch').mockImplementation(() =>
+    Promise.resolve({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve({ message: 'Успех!' }),
+    })
+  );
+});
 
 afterEach(() => {
   jest.restoreAllMocks();
 });
 
 describe('Frontend Tests', () => {
-  // Тест переключения панелей
   test('Переключение на регистрацию', () => {
     const signUpButton = screen.getByText('Sign Up');
     fireEvent.click(signUpButton);
@@ -60,7 +66,6 @@ describe('Frontend Tests', () => {
     expect(document.getElementById('container')).not.toHaveClass('right-panel-active');
   });
 
-  // Тест формы регистрации
   test('Успешная регистрация', async () => {
     const form = screen.getByTestId('sign-up-form');
     fireEvent.submit(form);
@@ -72,18 +77,18 @@ describe('Frontend Tests', () => {
   });
 
   test('Ошибка при регистрации (короткий пароль)', async () => {
-    // Изменяем пароль для имитации ошибки
     document.getElementById('register-password').value = '123';
     const form = screen.getByTestId('sign-up-form');
-    jest.spyOn(global, 'fetch').mockResolvedValue({
-      ok: false,
-      json: () =>
-        Promise.resolve({
-          detail: [
-            { loc: ['password'], msg: 'String should have at least 4 characters' },
-          ],
-        }),
-    });
+    jest.spyOn(global, 'fetch').mockImplementation(() =>
+      Promise.resolve({
+        ok: false,
+        status: 400,
+        json: () =>
+          Promise.resolve({
+            detail: [{ loc: ['password'], msg: 'String should have at least 4 characters' }],
+          }),
+      })
+    );
     fireEvent.submit(form);
     await waitFor(() => {
       const response = screen.getByText('password: Пароль должен содержать минимум 4 символа');
@@ -92,7 +97,6 @@ describe('Frontend Tests', () => {
     });
   });
 
-  // Тест формы авторизации
   test('Успешная авторизация', async () => {
     const form = screen.getByTestId('sign-in-form');
     fireEvent.submit(form);
@@ -104,10 +108,13 @@ describe('Frontend Tests', () => {
   });
 
   test('Ошибка при авторизации', async () => {
-    jest.spyOn(global, 'fetch').mockResolvedValue({
-      ok: false,
-      json: () => Promise.resolve({ message: 'Ошибка авторизации' }),
-    });
+    jest.spyOn(global, 'fetch').mockImplementation(() =>
+      Promise.resolve({
+        ok: false,
+        status: 400,
+        json: () => Promise.resolve({ message: 'Ошибка авторизации' }),
+      })
+    );
     const form = screen.getByTestId('sign-in-form');
     fireEvent.submit(form);
     await waitFor(() => {
