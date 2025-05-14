@@ -23,7 +23,7 @@ const dom = new JSDOM(`
         <input id="login-password" value="pass123" />
         <div id="login-response"></div>
       </form>
-      <script src="/script.js"></script>
+      <script src="/main.js"></script>
     </body>
   </html>
 `);
@@ -31,15 +31,15 @@ const dom = new JSDOM(`
 // Устанавливаем глобальный объект window
 global.window = dom.window;
 global.document = dom.window.document;
-import './script.js'; // Импортируем после настройки DOM
+beforeAll(() => {
+    require('../main.js');
+  });
 
 // Мокаем fetch
 beforeEach(() => {
-  jest.spyOn(global, 'fetch').mockResolvedValue({
-    ok: true,
-    json: () => Promise.resolve({ message: 'Успех!' }),
+    fetch.resetMocks();
+    fetch.mockResponseOnce(JSON.stringify({ message: 'Успех!' }));
   });
-});
 
 afterEach(() => {
   jest.restoreAllMocks();
