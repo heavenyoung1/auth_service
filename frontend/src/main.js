@@ -1,4 +1,3 @@
-// src/main.js
 export default function init() {
   const signUpButton = document.getElementById("signUp");
   const signInButton = document.getElementById("signIn");
@@ -44,7 +43,6 @@ export default function init() {
         body: JSON.stringify({ login, fullname, password, role }),
       });
       const data = await response.json();
-      console.log("Ответ от сервера:", data);
 
       if (response.ok) {
         responseElement.textContent = "Регистрация успешна! Вы получили токен.";
@@ -101,7 +99,6 @@ export default function init() {
       });
       const data = await response.json();
 
-      console.log("Ответ от сервера:", data);
       responseElement.textContent = data.message || data.detail || "Успех!";
       responseElement.style.color = data.message ? "green" : "red";
     } catch (error) {
