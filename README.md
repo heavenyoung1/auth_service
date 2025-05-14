@@ -1,3 +1,4 @@
+[![CI Pipeline](https://github.com/heavenyoung1/auth_service/actions/workflows/ci.yml/badge.svg)](https://github.com/heavenyoung1/auth_service/actions/workflows/ci.yml)
 # Auth Service - Сервис аутентификации
 
 Сервис аутентификации на основе FastAPI с JWT, SQLAlchemy и PostgreSQL. Поддерживает регистрацию пользователей, вход в систему и защищенные маршруты типа `/me`. Включает тесты с pytest и поддержку Docker для легкого развертывания.
