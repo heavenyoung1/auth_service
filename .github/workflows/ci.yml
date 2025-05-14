@@ -37,12 +37,10 @@ jobs:
 
       - name: Create test database
         run: |
-          # Убедимся, что PostgreSQL готов принимать подключения
           until pg_isready -h localhost -p 5432 -U postgres; do
             echo "Waiting for PostgreSQL to be ready..."
             sleep 2
           done
-          # Создаём базу auth_test_db
           psql -h localhost -p 5432 -U postgres -c "CREATE DATABASE auth_test_db;"
         env:
           PGPASSWORD: P@ssw0rd
