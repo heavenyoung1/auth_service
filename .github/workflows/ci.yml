@@ -39,13 +39,13 @@ jobs:
 
       - name: Install uv
         run: |
-          pip install uv
+          pip install uv --upgrade  # Устанавливаем последнюю версию uv
           uv --version  # Проверяем версию uv
 
       - name: Install backend dependencies
         run: |
           cd backend
-          uv sync --verbose  # Включаем подробный вывод для отладки
+          uv sync --extra dev  # Явно устанавливаем dev-зависимости
           ls -la .venv/bin  # Проверяем, что pytest установлен
           uv run -- python -m pytest --version  # Проверяем доступность pytest
 
