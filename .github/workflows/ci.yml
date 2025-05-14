@@ -29,6 +29,8 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 15
+          --log-driver=local
+          --log-opt max-size=10m
 
     steps:
       - name: Checkout code
