@@ -1,4 +1,6 @@
 [![CI Pipeline](https://github.com/heavenyoung1/auth_service/actions/workflows/ci.yml/badge.svg)](https://github.com/heavenyoung1/auth_service/actions/workflows/ci.yml)
+[![Python 3.13](https://img.shields.io/badge/python-3.13-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 # Auth Service - Сервис аутентификации
 
 Сервис аутентификации на основе FastAPI с JWT, SQLAlchemy и PostgreSQL. Поддерживает регистрацию пользователей, вход в систему и защищенные маршруты типа `/me`. Включает тесты с pytest и поддержку Docker для легкого развертывания.
