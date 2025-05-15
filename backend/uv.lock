@@ -36,8 +36,6 @@ dependencies = [
     { name = "psycopg2-binary" },
     { name = "pydantic" },
     { name = "pydantic-settings" },
-    { name = "pytest" },
-    { name = "pytest-cov" },
     { name = "python-jose", extra = ["cryptography"] },
     { name = "python-multipart" },
     { name = "sqlalchemy" },
@@ -47,6 +45,8 @@ dependencies = [
 [package.optional-dependencies]
 dev = [
     { name = "coverage" },
+    { name = "pytest" },
+    { name = "pytest-cov" },
 ]
 
 [package.metadata]
@@ -59,8 +59,8 @@ requires-dist = [
     { name = "psycopg2-binary", specifier = ">=2.9.10,<3.0.0" },
     { name = "pydantic", specifier = ">=2.11.3,<3.0.0" },
     { name = "pydantic-settings", specifier = ">=2.9.1,<3.0.0" },
-    { name = "pytest", specifier = ">=8.3.5,<9.0.0" },
-    { name = "pytest-cov", specifier = ">=6.1.1" },
+    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.3.5,<9.0.0" },
+    { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=6.1.1" },
     { name = "python-jose", extras = ["cryptography"], specifier = ">=3.4.0,<4.0.0" },
     { name = "python-multipart", specifier = ">=0.0.20,<0.0.21" },
     { name = "sqlalchemy", specifier = ">=2.0.40" },
