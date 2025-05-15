@@ -1,7 +1,7 @@
 from enum import Enum
 
 from sqlalchemy import String
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 class Base(DeclarativeBase):
     pass
@@ -18,6 +18,8 @@ class User(Base):
     fullname: Mapped[str] = mapped_column(String(100))
     hashed_password: Mapped[str] = mapped_column(String(128), nullable=False)
     role: Mapped[Role] = mapped_column(default=Role.USER, nullable=False) #Enum(Role) можно удалить (далее), нужен для прозрачной работы с БД и валидации данных 
+
+    refres_tokens =  relationship("refreshToken", back_populates="User", cascade="all, delete")
 
     # Для отладки определяется метод repr
     def __repr__(self) -> str:

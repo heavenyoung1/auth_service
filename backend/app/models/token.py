@@ -14,3 +14,6 @@ class RefreshToken(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime)
 
     user = relationship("User", back_populates="refreshToken")
+
+    def __repr__(self):
+        return f"RefreshToken id={self.id}, token={self.token[:9]}"
