@@ -15,7 +15,7 @@ router = APIRouter(tags=["auth"])
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/API/v0.1/login")
 
-@router.post("/register", response_model=Token)
+@router.post("/register", response_model=Token,  summary="Регистрация нового пользователя", description="Регистрирует нового пользователя в системе.")
 def register(
             user_in: UserCreate, 
             session: Session = Depends(get_session),
@@ -45,7 +45,7 @@ def register(
     access_token = create_access_token(data={"sub": user_in.login})
     return {"access_token": access_token, "token_type": "bearer"}
 
-@router.post("/login", response_model=Token)
+@router.post("/login", response_model=Token, summary="Авторизация пользователя", description="Аутентифицирует пользователя и возвращает токен доступа.")
 def login(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     session: Session = Depends(get_session),
@@ -88,6 +88,6 @@ def get_current_user(
         raise HTTPException(status_code=401, detail="Пользователь не найден")
     return user
 
-@router.get("/me", response_model=UserReturn)
+@router.get("/me", response_model=UserReturn, summary="Получение информации о текущем пользователе", description="Возвращает информацию о пользователе, чей токен используется для аутентификации.")
 def read_user_me(current_user = Depends(get_current_user)) -> User:
     return current_user
