@@ -6,6 +6,7 @@ from app.schemas.user import UserCreate, UserReturn, Token
 from app.models.user import User
 from app.models.token import RefreshToken
 from app.core.security import get_password_to_hash, create_access_token, verify_password
+from app.schemas.token import RefreshTokenRequest
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
@@ -13,7 +14,7 @@ from sqlalchemy.orm import Session
 from jose import JWTError, jwt
 from logging import Logger, getLogger
 from typing import Annotated
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 router = APIRouter(tags=["auth"])
 
@@ -100,10 +101,11 @@ def login(
     session.commit()
     
     logger.info(f"Успешный вход для {form_data.username}")
+    
     return {
         "access_token": access_token,
         "refresh_token": refresh_token_str,
-        "token_type": "bearer"
+        "token_type": "bearer",
     }
 
 def get_current_user(
@@ -123,6 +125,54 @@ def get_current_user(
     return user
 
 @router.post("/refresh", summary="", description="")
+def refresh_token(
+    token_data: RefreshTokenRequest,
+    session: Session = Depends(get_session),
+    logger: Logger = Depends(getLogger),
+):
+    logger.info("Попытка обновления токена")
+
+    # Выборка refresh_token из БД
+    refresh_token = session.query(RefreshToken).filter(RefreshToken.token == token_data.refresh_token).first()
+
+    # Проверка существования refresh_token в БД
+    if not refresh_token:
+        logger.warning("Refresh-токен не найден")
+        raise HTTPException(status_code=404, detail="Refresh-токен не найден")
+    
+    # Проверка срока действия токена
+    if refresh_token.expires_at and refresh_token.expires_at < datetime.now(timezone.utc):
+        logger.warning("Refresh-токен истёк")
+        session.delete(refresh_token)
+        session.commit()
+        raise HTTPException(status_code=401, detail="Refresh-токен истек")
+    
+        # Выборка пользователя по refresh_token из БД
+    user = session.query(User).filter(User.id == refresh_token.user_id).first()
+
+    # Проверка существования пользователя по его refresh_token в БД
+    if not user:
+        logger.warning("Пользователь не найден")
+        raise HTTPException(status_code=404, detail="Пользователь не найден")
+    
+    # Генерация нового access-token
+    access_token = create_access_token(data={"sub": user.login})
+    
+    logger.info(f"Access-токен успешно обновлён для пользователя {user.login}")
+
+    return {
+        "access_token": access_token,
+        "refresh_token": token_data.refresh_token,
+        "token_type": "bearer",
+    }
+
+    
+
+
+    
+
+
+
 
 @router.get("/me", response_model=UserReturn, summary="Получение информации о текущем пользователе", description="Возвращает информацию о пользователе, чей токен используется для аутентификации.")
 def read_user_me(current_user = Depends(get_current_user)) -> User:
