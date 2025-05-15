@@ -1,6 +1,6 @@
 from sqlalchemy import String, Integer, ForeignKey, DateTime
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
-from datetime import datetime
+from datetime import datetime, timezone
 
 class Base(DeclarativeBase):
     pass
@@ -11,7 +11,7 @@ class RefreshToken(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     token: Mapped[str] = mapped_column(String, unique=True , nullable=False)
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("user.id"))
-    created_at: Mapped[datetime] = mapped_column(DateTime)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(timezone.utc))
 
     user = relationship("User", back_populates="refresh_tokens")
 
