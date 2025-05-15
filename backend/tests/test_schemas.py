@@ -3,7 +3,7 @@ from app.schemas.user import UserCreate, Role
 
 # Тест создания пользователя
 if __name__ == "__main__":
-    user_create = UserCreate(login="testUser", fullname="Piter Parker", password="123456", role=Role.ADMIN)
+    user_create = UserCreate(login="testUser", fullname="Piter Parker", password="123456", role=Role.admin)
     print(user_create)
 
 # Тест валидации данных 

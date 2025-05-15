@@ -55,15 +55,15 @@ def client(setup_db):
     # Очищаем переопределения после теста
     app.dependency_overrides.clear()
 
-# Тест успешной регистрации пользователя
 def test_register_success(client, user_factory):
+    """Тест - успешная регистрация пользователя"""
     user = user_factory()  # Создание данных пользователя из класса UserData
     response = client.post("/API/v0.1/register", json=user.__dict__)
     assert response.status_code == 200
     assert "access_token" in response.json()
 
-# Тест попытки регистрации с уже существующим логином
 def test_register_duplicate_login(client, user_factory):
+    """Тест - попытка регистрации с уже существующим логином"""
     user = user_factory() # Создание данных пользователя из класса UserData
     client.post("/API/v0.1/register", json=user.__dict__)
 
@@ -75,13 +75,14 @@ def test_register_duplicate_login(client, user_factory):
 
 # Тест валидации короткого пароля (менее 4 символов)
 def test_register_short_password(client, user_factory):
+    """Тест - попытка регистрации с коротким паролем"""
     user = user_factory(password="000")  # Создание данных пользователя из класса UserData c переопределением пароля
     response = client.post("/API/v0.1/register", json=user.__dict__) 
 
     assert response.status_code == 422, "Ошибка 422, выдаётся Pydantic`ом, валидация происходит в схеме UserCreate"
 
-# Тест успешного входа
 def test_login_success(client, user_factory):
+    """Тест - Успешный вход"""
     user = user_factory()  # Создание данных пользователя из класса UserData
     # Регистрация пользователя 
     client.post("/API/v0.1/register", json=user.__dict__) 
@@ -95,9 +96,11 @@ def test_login_success(client, user_factory):
 
     assert response.status_code == 200
     assert "access_token" in response.json()
+    assert "refresh_token" in response.json()
     assert response.json()["token_type"] == "bearer"
 
 def test_login_wrong_password(client, user_factory):
+    """Тест - Логин с неправильным паролем"""
     user = user_factory()  # Создание данных пользователя из класса UserData
     # Регистрация пользователя 
     client.post("/API/v0.1/register", json=user.__dict__) 
@@ -113,6 +116,7 @@ def test_login_wrong_password(client, user_factory):
     assert response.json()["detail"] == "Неверный пароль"
 
 def test_login_unexistent_user(client):
+    """Тест - Логин несуществующего пользователя (неверный логин)"""    
     response = client.post("/API/v0.1/login", data={
         "username": "testUser111",
         "password": "PASSWORD"
@@ -122,8 +126,8 @@ def test_login_unexistent_user(client):
     assert response.status_code == 401
     assert response.json()["detail"] == "Неверный логин"
 
-# Тест - получение текущего пользователя
 def test_get_current_user(client, user_factory):
+    """Тест - получение текущего пользователя"""
     user = user_factory()  # Создание данных пользователя из класса UserData
 
     # Регистрация пользователя 
@@ -143,28 +147,56 @@ def test_get_current_user(client, user_factory):
     response = client.get("/API/v0.1/me", headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == 200
 
+def test_refresh_token_success(client, user_factory):
+    """Тест - обновление access-token успешно"""
+    user = user_factory()  # Создание данных пользователя из класса UserData
+
+    client.post("/API/v0.1/register", json=user.__dict__)
+
+    # Логин пользователя
+    login_response = client.post("/API/v0.1/login", data={
+        "username": user.login,
+        "password": user.password
+        }
+    )
+
+    refresh_token = login_response.json()["refresh_token"]
+
+    response = client.post("/API/v0.1/refresh", json={"refresh_token":refresh_token})
+
+    logger.info(f"Status code: {response.status_code}")
+    logger.info(f"Response body: {response.json()}")
+
+    assert response.status_code == 200
+    assert "access_token" in response.json()
+    assert response.json()["refresh_token"] == refresh_token
+
 def test_get_current_user_invalid_token(client):
+    """Тест - получение текущего пользователя с некорректным access-token"""
     response = client.get("/API/v0.1/me", headers={"Authorization": f"Bearer invalidddd_token"})
     logger.info(f"Status code: {response.status_code}")
     logger.info(f"Response body: {response.json()}")
     assert response.status_code == 401
 
-# Тест для отработки нарушенной структуры токена
 def test_get_current_user_missing_sub(client):
+    """Тест - отработка нарушенной структуры токена"""
 
     # Создаём токен без "sub"
     token = jwt.encode({}, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
     response = client.get("/API/v0.1/me", headers={"Authorization": f"Bearer {token}"})
+
     assert response.status_code == 401
     assert response.json()["detail"] == "Неверный токен"
 
 def test_user_not_found(client):
+    """Тест - отработка некорретных sub"""
     token = jwt.encode({"sub": "nonexist_user"}, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
     response = client.get("/API/v0.1/me", headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == 401
     assert response.json()["detail"] == "Пользователь не найден"
 
 def test_get_session(client):
+    """Тест - подключение к БД"""
     response = client.get("/API/v0.1/test_db_session")
     assert response.status_code == 200
     assert response.json()["ok"] is True

@@ -1,7 +1,7 @@
 import secrets
 
 from app.core.config import settings
-from app.core.security import get_password_to_hash, create_access_token, verify_password
+from app.core.security import get_password_hash, create_access_token, verify_password
 from app.database.db import get_session
 from app.models.user import User
 from app.models.token import RefreshToken
@@ -20,7 +20,6 @@ router = APIRouter(tags=["auth"])
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/API/v0.1/login")
 
-
 @router.post("/register", response_model=Token,  summary="Регистрация нового пользователя", description="Регистрирует нового пользователя в системе.")
 def register(
             user_in: UserCreate, 
@@ -34,7 +33,7 @@ def register(
         raise HTTPException(status_code=400, detail="Такой логин уже существует.")
     
     # Создание нового пользователя
-    hashed_password = get_password_to_hash(user_in.password)
+    hashed_password = get_password_hash(user_in.password)
 
     db_user = User(
                     login=user_in.login,
@@ -70,7 +69,6 @@ def register(
         "refresh_token": refresh_token_str,
         "token_type": "bearer"
     }
-
 
 @router.post("/login", response_model=Token, summary="Авторизация пользователя", description="Аутентифицирует пользователя и возвращает токен доступа.")
 def login(
@@ -142,7 +140,6 @@ def get_current_user(
     logger.info(f"Пользователь {login} успешно аутентифицирован")
     return user
 
-
 @router.get(
         "/me", 
         response_model=UserReturn, 
@@ -195,7 +192,7 @@ def refresh_token(
     }
 
 
-@router("/logout", summary="", description="")
+@router("/logout", summary="Выход пользователя из сессии", description="Выход пользователя из сессии")
 def logout(
     token_data: RefreshTokenRequest, 
     session: Session = Depends(get_session),

@@ -5,9 +5,6 @@ import pytest
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 
-
-# Если возникают проблемы с неправильным чтением URL в терминале выполнить команду - удаление переменной окружения >>> Get-ChildItem Env:TEST_DATABASE_URL
-
 # Используем тестовую БД
 engine = create_engine(settings.TEST_DATABASE_URL, echo=True)
 Session = sessionmaker(engine)

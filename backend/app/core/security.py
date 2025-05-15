@@ -11,7 +11,7 @@ def verify_password(original_password, hashed_password):
     return pwd_context.verify(original_password, hashed_password)
 
 # Хеширование пароля
-def get_password_to_hash(password):
+def get_password_hash(password):
     return pwd_context.hash(password)
 
 # Создание JWT-токена для аутентификации пользователей
