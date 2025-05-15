@@ -13,7 +13,7 @@ class RefreshToken(Base):
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("user.id"))
     created_at: Mapped[datetime] = mapped_column(DateTime)
 
-    user = relationship("User", back_populates="refreshToken")
+    user = relationship("User", back_populates="refresh_tokens")
 
     def __repr__(self):
         return f"RefreshToken id={self.id}, token={self.token[:9]}"
