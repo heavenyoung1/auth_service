@@ -1,11 +1,11 @@
 import secrets
 
 from app.core.config import settings
+from app.core.security import get_password_to_hash, create_access_token, verify_password
 from app.database.db import get_session
-from app.schemas.user import UserCreate, UserReturn, Token
 from app.models.user import User
 from app.models.token import RefreshToken
-from app.core.security import get_password_to_hash, create_access_token, verify_password
+from app.schemas.user import UserCreate, UserReturn, Token
 from app.schemas.token import RefreshTokenRequest
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -44,6 +44,7 @@ def register(
     session.add(db_user)
     session.commit()
     session.refresh(db_user)
+
     logger.info(f"Пользователь {user_in.login} успешно зарегистрирован с id {db_user.id}")
 
     # Генеарация access-token
@@ -56,9 +57,12 @@ def register(
         user_id=db_user.id,
         expires_at=datetime.now() + timedelta(days=7)
     )
+
     session.add(refresh_token)
     session.commit()
+
     logger.info(f"Пользователь {user_in.login} успешно зарегистрирован с id: {db_user.id}")
+    
     return {
         "access_token": access_token, 
         "refresh_token": refresh_token_str,
@@ -124,6 +128,10 @@ def get_current_user(
         raise HTTPException(status_code=401, detail="Пользователь не найден")
     return user
 
+@router.get("/me", response_model=UserReturn, summary="Получение информации о текущем пользователе", description="Возвращает информацию о пользователе, чей токен используется для аутентификации.")
+def read_user_me(current_user = Depends(get_current_user)) -> User:
+    return current_user
+
 @router.post("/refresh", summary="", description="")
 def refresh_token(
     token_data: RefreshTokenRequest,
@@ -147,7 +155,7 @@ def refresh_token(
         session.commit()
         raise HTTPException(status_code=401, detail="Refresh-токен истек")
     
-        # Выборка пользователя по refresh_token из БД
+    # Выборка пользователя по refresh_token из БД
     user = session.query(User).filter(User.id == refresh_token.user_id).first()
 
     # Проверка существования пользователя по его refresh_token в БД
@@ -157,7 +165,7 @@ def refresh_token(
     
     # Генерация нового access-token
     access_token = create_access_token(data={"sub": user.login})
-    
+
     logger.info(f"Access-токен успешно обновлён для пользователя {user.login}")
 
     return {
@@ -166,14 +174,28 @@ def refresh_token(
         "token_type": "bearer",
     }
 
+@router("/logout", summary="", description="")
+def logout(
+    token_data: RefreshTokenRequest, 
+    session: Session = Depends(get_session),
+    logger: Logger = Depends(getLogger),
+):
     
+    logger.info("Попытка выхода пользователя")
 
+    # Выборка refresh_token из БД
+    refresh_token = session.query(RefreshToken).filter(RefreshToken.token == token_data.refresh_token)
 
+    # Проверка существования refresh_token в БД
+    if not refresh_token:
+        logger.warning("Refresh-токен не найден")
+        raise HTTPException(status_code=404, detail="Refresh-токен не найден")
     
+    session.delete(refresh_token)
+    session.commit()
 
+    logger.info("Пользователь вышел")
 
-
-
-@router.get("/me", response_model=UserReturn, summary="Получение информации о текущем пользователе", description="Возвращает информацию о пользователе, чей токен используется для аутентификации.")
-def read_user_me(current_user = Depends(get_current_user)) -> User:
-    return current_user
+    return {"message": "Успешный выход"}
+    
+    

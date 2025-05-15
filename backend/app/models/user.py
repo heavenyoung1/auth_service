@@ -16,7 +16,7 @@ class User(Base):
     is_active: Mapped[bool] = mapped_column(default=True)
     is_superuser: Mapped[bool] = mapped_column(default=False)
 
-    refres_tokens =  relationship("refreshToken", back_populates="User", cascade="all, delete")
+    refresh_tokens =  relationship("refreshToken", back_populates="User", cascade="all, delete")
 
     # Для отладки определяется метод repr
     def __repr__(self) -> str:
