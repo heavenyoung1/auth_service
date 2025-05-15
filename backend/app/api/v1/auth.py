@@ -1,7 +1,10 @@
+import secrets
+
 from app.core.config import settings
 from app.database.db import get_session
 from app.schemas.user import UserCreate, UserReturn, Token
 from app.models.user import User
+from app.models.token import RefreshToken
 from app.core.security import get_password_to_hash, create_access_token, verify_password
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -10,6 +13,7 @@ from sqlalchemy.orm import Session
 from jose import JWTError, jwt
 from logging import Logger, getLogger
 from typing import Annotated
+from datetime import datetime, timedelta
 
 router = APIRouter(tags=["auth"])
 
@@ -41,9 +45,24 @@ def register(
     session.refresh(db_user)
     logger.info(f"Пользователь {user_in.login} успешно зарегистрирован с id {db_user.id}")
 
-    # Генеарация токена
+    # Генеарация access-token
     access_token = create_access_token(data={"sub": user_in.login})
-    return {"access_token": access_token, "token_type": "bearer"}
+
+    # Генеарация refresh-token
+    refresh_token_str = secrets.token_urlsafe(32)
+    refresh_token = RefreshToken(
+        token=refresh_token_str,
+        user_id=db_user.id,
+        expires_at=datetime.now() + timedelta(days=7)
+    )
+    session.add(refresh_token)
+    session.commit()
+    logger.info(f"Пользователь {user_in.login} успешно зарегистрирован с id: {db_user.id}")
+    return {
+        "access_token": access_token, 
+        "refresh_token": refresh_token_str,
+        "token_type": "bearer"
+    }
 
 @router.post("/login", response_model=Token, summary="Авторизация пользователя", description="Аутентифицирует пользователя и возвращает токен доступа.")
 def login(
@@ -67,10 +86,25 @@ def login(
         logger.warning(f"Неверный пароль для {form_data.username}")
         raise HTTPException(status_code=401, detail="Неверный пароль")
     
-    # Генерация токена
+    # Генерация access-token
     access_token = create_access_token(data={"sub": db_user.login})
+
+    # Генерация refresh-токен
+    refresh_token_str = secrets.token_urlsafe(32)
+    refresh_token = RefreshToken(
+        token=refresh_token_str,
+        user_id=db_user.id,
+        expires_at=datetime.utcnow() + timedelta(days=7)  # 7 дней
+    )
+    session.add(refresh_token)
+    session.commit()
+    
     logger.info(f"Успешный вход для {form_data.username}")
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {
+        "access_token": access_token,
+        "refresh_token": refresh_token_str,
+        "token_type": "bearer"
+    }
 
 def get_current_user(
         token: Annotated[str, Depends(oauth2_scheme)],
@@ -87,6 +121,8 @@ def get_current_user(
     if user is None:
         raise HTTPException(status_code=401, detail="Пользователь не найден")
     return user
+
+@router.post("/refresh", summary="", description="")
 
 @router.get("/me", response_model=UserReturn, summary="Получение информации о текущем пользователе", description="Возвращает информацию о пользователе, чей токен используется для аутентификации.")
 def read_user_me(current_user = Depends(get_current_user)) -> User:
