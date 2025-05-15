@@ -1,5 +1,3 @@
-from enum import Enum
-
 from sqlalchemy import String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from typing import Literal
@@ -8,7 +6,7 @@ class Base(DeclarativeBase):
     pass
 
 class User(Base):
-    __tablename__ = "user"
+    __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     login: Mapped[str] = mapped_column(String(30), nullable=False, info={"min_length": 6}) # Минимальная длина - 6 символов
