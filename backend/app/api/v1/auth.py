@@ -20,6 +20,7 @@ router = APIRouter(tags=["auth"])
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/API/v0.1/login")
 
+
 @router.post("/register", response_model=Token,  summary="Регистрация нового пользователя", description="Регистрирует нового пользователя в системе.")
 def register(
             user_in: UserCreate, 
@@ -34,6 +35,7 @@ def register(
     
     # Создание нового пользователя
     hashed_password = get_password_to_hash(user_in.password)
+
     db_user = User(
                     login=user_in.login,
                     fullname=user_in.fullname,
@@ -62,12 +64,13 @@ def register(
     session.commit()
 
     logger.info(f"Пользователь {user_in.login} успешно зарегистрирован с id: {db_user.id}")
-    
+
     return {
         "access_token": access_token, 
         "refresh_token": refresh_token_str,
         "token_type": "bearer"
     }
+
 
 @router.post("/login", response_model=Token, summary="Авторизация пользователя", description="Аутентифицирует пользователя и возвращает токен доступа.")
 def login(
@@ -99,7 +102,7 @@ def login(
     refresh_token = RefreshToken(
         token=refresh_token_str,
         user_id=db_user.id,
-        expires_at=datetime.utcnow() + timedelta(days=7)  # 7 дней
+        expires_at=datetime.now(timezone.utc) + timedelta(days=7)  # 7 дней
     )
     session.add(refresh_token)
     session.commit()
@@ -114,23 +117,40 @@ def login(
 
 def get_current_user(
         token: Annotated[str, Depends(oauth2_scheme)],
-        session: Session = Depends(get_session)
+        session: Session = Depends(get_session),
+        logger: Logger = Depends(getLogger),
 ) -> User:
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
         login: str = payload.get("sub")
+
         if login is None:
-            raise HTTPException(status_code=401, detail="Неверный токен")
-    except JWTError:
-        raise HTTPException(status_code=401, detail="Неверный токен")
+            logger.warning("Токен не содержит логина (поле 'sub')")
+            raise HTTPException(status_code=401, detail="Токен не содержит логина (поле 'sub')")
+        
+    except JWTError as e:
+        logger.warning(f"Ошибка проверки токена: {str(e)}")
+        raise HTTPException(status_code=401, detail="Неверный или истекший токен")
+
+    
     user = session.query(User).filter(User.login == login).first()
+
     if user is None:
+        logger.warning(f"Пользователь c логином {login} не найден")
         raise HTTPException(status_code=401, detail="Пользователь не найден")
+
+    logger.info(f"Пользователь {login} успешно аутентифицирован")
     return user
 
-@router.get("/me", response_model=UserReturn, summary="Получение информации о текущем пользователе", description="Возвращает информацию о пользователе, чей токен используется для аутентификации.")
+
+@router.get(
+        "/me", 
+        response_model=UserReturn, 
+        summary="Получение информации о текущем пользователе", 
+        description="Возвращает информацию о пользователе, чей токен используется для аутентификации.")
 def read_user_me(current_user = Depends(get_current_user)) -> User:
     return current_user
+
 
 @router.post("/refresh", summary="", description="")
 def refresh_token(
@@ -173,6 +193,7 @@ def refresh_token(
         "refresh_token": token_data.refresh_token,
         "token_type": "bearer",
     }
+
 
 @router("/logout", summary="", description="")
 def logout(
