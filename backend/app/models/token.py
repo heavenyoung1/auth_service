@@ -12,6 +12,7 @@ class RefreshToken(Base):
     token: Mapped[str] = mapped_column(String, unique=True , nullable=False)
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("user.id"))
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(timezone.utc))
+    expires_at: Mapped[datetime] = mapped_column(DateTime, nullable=False)
 
     user = relationship("User", back_populates="refresh_tokens")
 
