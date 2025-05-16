@@ -10,8 +10,8 @@ RUN pip install uv
 # Копируем pyproject.toml и другие файлы для установки зависимостей
 COPY pyproject.toml .
 
-# Устанавливаем зависимости с помощью UV
-RUN uv sync --no-dev
+# Устанавливаем ВСЕ зависимости (включая dev)
+RUN uv sync --all-extras  # Ключевое изменение!
 
 # Копируем весь исходный код backend (без вложенной папки backend/)
 COPY . .
