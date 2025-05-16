@@ -51,22 +51,22 @@ def register(
     # Генеарация access-token
     access_token = create_access_token(data={"sub": user_in.login})
 
-    # Генеарация refresh-token
-    refresh_token_str = secrets.token_urlsafe(32)
-    refresh_token = RefreshToken(
-        token=refresh_token_str,
-        user_id=db_user.id,
-        expires_at=datetime.now() + timedelta(days=7)
-    )
+    # Генерация refresh-token (ВЕРОЯТНО НЕ НУЖНА В /register ТОЛЬКО В /login)
+    # refresh_token_str = secrets.token_urlsafe(32)
+    # refresh_token = RefreshToken(
+    #     token=refresh_token_str,
+    #     user_id=db_user.id,
+    #     expires_at=datetime.now() + timedelta(days=7)
+    # )
 
-    session.add(refresh_token)
-    session.commit()
+    # session.add(refresh_token)
+    # session.commit()
 
     logger.info(f"Пользователь {user_in.login} успешно зарегистрирован с id: {db_user.id}")
 
     return {
         "access_token": access_token, 
-        "refresh_token": refresh_token_str,
+        #"refresh_token": refresh_token_str,
         "token_type": "bearer"
     }
 
