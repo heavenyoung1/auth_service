@@ -32,6 +32,7 @@ class UserData:
     fullname: str = "Test User"
     password: str = "password"
     role: str = "user"
+    refresh_tokens: str = "xk3L9jFgT2mKpQwRvYyNn6Bc8ZsX7Hv1"
 
 @pytest.fixture
 def user_factory():
