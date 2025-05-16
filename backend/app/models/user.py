@@ -3,7 +3,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing import Literal, List
 
 from app.models.base import Base
-from app.models.token import RefreshToken
+#from app.models.token import RefreshToken
 
 class User(Base):
     __tablename__ = "users"
@@ -16,7 +16,7 @@ class User(Base):
     is_active: Mapped[bool] = mapped_column(default=True)
     is_superuser: Mapped[bool] = mapped_column(default=False)
 
-    refresh_token: Mapped[List["RefreshToken"]] =  relationship(back_populates="users", cascade="all, delete") # Добавлен List, теперь связь - One To Many
+    refresh_tokens: Mapped[List["RefreshToken"]] =  relationship(back_populates="user", cascade="all, delete") # Добавлен List, теперь связь - One To Many
 
     # Для отладки определяется метод repr
     def __repr__(self) -> str:
