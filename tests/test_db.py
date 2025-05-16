@@ -49,7 +49,7 @@ def test_create_user(setup_db: tuple[()]):
             login="testlogin",
             fullname="Test User",
             hashed_password="password",
-            role=Role.USER
+            role="user"
         )
 
         # Сохранение в БД
