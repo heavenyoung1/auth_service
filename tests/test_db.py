@@ -49,7 +49,8 @@ def test_create_user(setup_db: tuple[()]):
             login="testlogin",
             fullname="Test User",
             hashed_password="password",
-            role="user"
+            role="user",
+            refresh_tokens="xk3L9jFgT2mKpQwRvYyNn6Bc8ZsX7Hv1" # 32 байта
         )
 
         # Сохранение в БД
