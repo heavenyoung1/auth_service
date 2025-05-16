@@ -2,7 +2,7 @@ from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing import Literal
 
-from base import Base
+from app.models.base import Base
 
 class User(Base):
     __tablename__ = "users"
