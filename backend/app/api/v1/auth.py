@@ -192,7 +192,7 @@ def refresh_token(
     }
 
 
-@router("/logout", summary="Выход пользователя из сессии", description="Выход пользователя из сессии")
+@router.post("/logout", summary="Выход пользователя из сессии", description="Выход пользователя из сессии")
 def logout(
     token_data: RefreshTokenRequest, 
     session: Session = Depends(get_session),
