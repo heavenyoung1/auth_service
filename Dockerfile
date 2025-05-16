@@ -16,6 +16,9 @@ RUN uv sync --all-extras
 # Копируем весь исходный код backend (без вложенной папки backend/)
 COPY . .
 
+# Настраиваем автоматическую активацию виртуальной среды
+RUN echo "source /app/.venv/bin/activate" >> /root/.bashrc
+
 # Добавление рабочей директории
 ENV PYTHONPATH=/app
 
