@@ -27,7 +27,6 @@ def create_access_token(data: dict):
         to_encode, 
         settings.SECRET_KEY, 
         algorithm=settings.ALGORITHM,
-        #type="access_token",
     )
     return encoded_jwt
 
@@ -40,7 +39,6 @@ def create_refresh_token(data: dict):
         to_encode,
         settings.SECRET_KEY,
         algorithm=settings.ALGORITHM,
-        #type="refresh_token",
     )
     return encoded_frsh_token
 

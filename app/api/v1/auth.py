@@ -1,7 +1,7 @@
 import secrets
 
 from app.core.config import settings
-from app.core.security import get_password_hash, create_access_token, verify_password
+from app.core.security import get_password_hash, create_access_token, create_refresh_token , verify_password
 from app.database.db import get_session
 from app.models.user import User
 from app.models.token import RefreshToken
@@ -83,8 +83,9 @@ def login(
     # Генерация access-token
     access_token = create_access_token(data={"sub": db_user.login})
 
-    # Генерация refresh-токен
-    refresh_token_str = secrets.token_urlsafe(32)
+    # Генерация refresh-токен (сам токен JWT)
+    refresh_token_str = create_refresh_token(data={"sub": db_user.login})
+    # Запись модели SQLAlchemy в БД
     refresh_token = RefreshToken(
         token=refresh_token_str,
         user_id=db_user.id,
