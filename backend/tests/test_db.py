@@ -1,4 +1,4 @@
-from app.models.user import Base, User, Role
+from app.models.user import Base, User
 from app.core.config import settings
 
 import pytest
