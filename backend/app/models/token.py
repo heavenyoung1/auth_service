@@ -1,9 +1,8 @@
 from sqlalchemy import String, Integer, ForeignKey, DateTime
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from datetime import datetime, timezone
 
-class Base(DeclarativeBase):
-    pass
+from base import Base
 
 class RefreshToken(Base):
     __tablename__ = "refresh_tokens"
