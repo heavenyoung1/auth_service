@@ -3,10 +3,11 @@ from typing import Optional
 
 class Settings(BaseSettings):
     DATABASE_URL: str
-    TEST_DATABASE_URL: Optional[str] = None  # Добавляем опциональное поле
+    TEST_DATABASE_URL: Optional[str] = None # Добавляем опциональное поле
     SECRET_KEY: str
     ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30   # минуты
+    REFRESH_TOKEN_EXPIRE_DAYS: int = 30     # дни
 
     PG_HOST: str
     PG_DB: str
