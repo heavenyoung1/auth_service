@@ -1,5 +1,4 @@
 from pydantic import BaseModel, Field, ConfigDict
-from app.models.user import Role
 
 # python -m app.schemas.user - команда для тестирования работы модуля как пакета
 
@@ -18,11 +17,11 @@ class UserCreate(UserBase):
     password: str = Field(
         min_length=4, 
         max_length=32)
-    role: Role
+    role: str
 
 class UserReturn(UserBase):
     id: int
-    role: Role
+    role: str
 
     model_config = ConfigDict(from_attributes = True)
 
