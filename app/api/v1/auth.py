@@ -30,7 +30,7 @@ def register(
     # Проверка существования пользователя
     db_user = session.query(User).filter(User.login == user_in.login).first()
     if db_user:
-        raise HTTPException(status_code=400, detail="Такой логин уже существует.")
+        raise HTTPException(status_code=400, detail="Такой логин уже существует")
     
     # Создание нового пользователя
     hashed_password = get_password_hash(user_in.password)
@@ -51,22 +51,10 @@ def register(
     # Генеарация access-token
     access_token = create_access_token(data={"sub": user_in.login})
 
-    # Генерация refresh-token (ВЕРОЯТНО НЕ НУЖНА В /register ТОЛЬКО В /login)
-    # refresh_token_str = secrets.token_urlsafe(32)
-    # refresh_token = RefreshToken(
-    #     token=refresh_token_str,
-    #     user_id=db_user.id,
-    #     expires_at=datetime.now() + timedelta(days=7)
-    # )
-
-    # session.add(refresh_token)
-    # session.commit()
-
     logger.info(f"Пользователь {user_in.login} успешно зарегистрирован, id: {db_user.id}")
 
     return {
         "access_token": access_token, 
-        #"refresh_token": refresh_token_str,
         "token_type": "bearer"
     }
 

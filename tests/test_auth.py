@@ -55,14 +55,14 @@ def client(setup_db):
     # Очищаем переопределения после теста
     app.dependency_overrides.clear()
 
-def test_register_success(client, user_factory):
+def test_register_success(client, user_factory): # TEST PASSED
     """Тест - успешная регистрация пользователя"""
     user = user_factory()  # Создание данных пользователя из класса UserData
     response = client.post("/API/v0.1/register", json=user.__dict__)
     assert response.status_code == 200
     assert "access_token" in response.json()
 
-def test_register_duplicate_login(client, user_factory):
+def test_register_duplicate_login(client, user_factory): # TEST PASSED
     """Тест - попытка регистрации с уже существующим логином"""
     user = user_factory() # Создание данных пользователя из класса UserData
     client.post("/API/v0.1/register", json=user.__dict__)
@@ -71,10 +71,9 @@ def test_register_duplicate_login(client, user_factory):
     response = client.post("/API/v0.1/register", json=user.__dict__)
 
     assert response.status_code == 400
-    assert response.json()["detail"] == "Такой логин уже существует."
+    assert response.json()["detail"] == "Такой логин уже существует"
 
-# Тест валидации короткого пароля (менее 4 символов)
-def test_register_short_password(client, user_factory):
+def test_register_short_password(client, user_factory): # TEST PASSED
     """Тест - попытка регистрации с коротким паролем"""
     user = user_factory(password="000")  # Создание данных пользователя из класса UserData c переопределением пароля
     response = client.post("/API/v0.1/register", json=user.__dict__) 
