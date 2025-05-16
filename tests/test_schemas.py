@@ -13,7 +13,7 @@ except ValueError as e:
     print(f"Ошибка валидации данных {e}")
 
 def test_user_create_valid():
-    user = UserCreate(login="test@example.com", fullname="Test User", password="123456", role="admin")
+    user = UserCreate(login="test@example.com", fullname="Test User", password="123456", role="user")
     assert user.login == "test@example.com"
     assert user.role == "user"
 
