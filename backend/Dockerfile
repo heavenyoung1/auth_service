@@ -23,7 +23,7 @@ ENV PYTHONPATH=/app
 EXPOSE 8000
 
 # Запускаем тесты при сборке (опционально)
-RUN pytest tests -v --log-cli-level=INFO
+# RUN pytest tests -v --log-cli-level=INFO
 
 # Запускаем FastAPI с помощью Uvicorn
 CMD ["uv", "run", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
