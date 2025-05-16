@@ -2,6 +2,8 @@ from datetime import datetime, timedelta, timezone
 from jose import jwt
 from passlib.context import CryptContext
 from app.core.config import settings
+from sqlalchemy.orm import Session
+from app.models.token import RefreshToken
 
 # Для тестов
 # from jose.jwt import decode
@@ -41,6 +43,33 @@ def create_refresh_token(data: dict):
         algorithm=settings.ALGORITHM,
     )
     return encoded_frsh_token
+
+def create_refresh_token_and_save(user_id: int, session: Session) -> str:
+    """
+    Создаёт JWT refresh_token и сохраняет его в базе данных как объект RefreshToken.
+    
+    Args:
+        user_id (int): ID пользователя. 
+        session (Session): SQLAlchemy сессия для сохранения в базу.
+    
+    Returns:
+        str: Сгенерированный refresh_token (JWT).
+    """
+    data = {"sub": user_id}
+
+    refresh_token_str = create_refresh_token(data)
+
+    refresh_token = RefreshToken(
+        token=refresh_token_str,
+        user_id=user_id.id,
+    )
+
+    session.add(refresh_token)
+    session.commit()
+
+    return refresh_token_str
+
+
 
 
 # token = create_refresh_token({"sub": "test"})

@@ -84,16 +84,8 @@ def login(
     access_token = create_access_token(data={"sub": db_user.login})
 
     # Генерация refresh-токен (сам токен JWT)
-    refresh_token_str = create_refresh_token(data={"sub": db_user.login})
-    # Запись модели SQLAlchemy в БД
-    refresh_token = RefreshToken(
-        token=refresh_token_str,
-        user_id=db_user.id,
-        expires_at=datetime.now(timezone.utc) + timedelta(days=7)  # 7 дней
-    )
-    session.add(refresh_token)
-    session.commit()
-    
+    refresh_token_str = create_refresh_token(data=db_user.id)
+
     logger.info(f"Успешный вход для {form_data.username}")
     
     return {
