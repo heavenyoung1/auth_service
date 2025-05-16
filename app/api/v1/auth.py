@@ -46,7 +46,7 @@ def register(
     session.commit()
     session.refresh(db_user)
 
-    logger.info(f"Пользователь {user_in.login} успешно зарегистрирован с id {db_user.id}")
+    logger.info(f"Пользователь {user_in.login} успешно зарегистрирован, id {db_user.id}")
 
     # Генеарация access-token
     access_token = create_access_token(data={"sub": user_in.login})
@@ -62,7 +62,7 @@ def register(
     # session.add(refresh_token)
     # session.commit()
 
-    logger.info(f"Пользователь {user_in.login} успешно зарегистрирован с id: {db_user.id}")
+    logger.info(f"Пользователь {user_in.login} успешно зарегистрирован, id: {db_user.id}")
 
     return {
         "access_token": access_token, 

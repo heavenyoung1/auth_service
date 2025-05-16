@@ -12,8 +12,7 @@ class RefreshToken(Base):
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), index=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(timezone.utc))
     expires_at: Mapped[datetime] = mapped_column(DateTime, nullable=False)
-
-    user: Mapped["User"] = relationship(back_populates="refresh_token")
+    user: Mapped["User"] = relationship(back_populates="refresh_tokens")
 
     def __repr__(self):
         return f"RefreshToken id={self.id}, token={self.token[:9]}"
