@@ -3,6 +3,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from datetime import datetime, timezone
 
 from app.models.base import Base
+from app.models.user import User
 
 class RefreshToken(Base):
     __tablename__ = "refresh_tokens"
@@ -13,7 +14,7 @@ class RefreshToken(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(timezone.utc))
     expires_at: Mapped[datetime] = mapped_column(DateTime, nullable=False)
 
-    users = relationship("User", back_populates="refresh_tokens")
+    users: Mapped["User"] = relationship(back_populates="refresh_token")
 
     def __repr__(self):
         return f"RefreshToken id={self.id}, token={self.token[:9]}"
