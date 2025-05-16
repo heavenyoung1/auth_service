@@ -94,6 +94,7 @@ def test_login_success(client, user_factory):
     )
     logger.debug(response.json["access_token"])
     logger.debug(response.json["refresh_token"])
+    logger.debug(response.json())
     assert response.status_code == 200
     assert "access_token" in response.json()
     assert "refresh_token" in response.json()
