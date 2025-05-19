@@ -58,6 +58,7 @@ def create_refresh_token(user_id: int, session: Session) -> str:
         algorithm=settings.ALGORITHM,
     )
     logger.debug(expire)
+    logger.debug("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")
 
     refresh_token = RefreshToken(
         token=refresh_token_str,
