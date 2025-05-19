@@ -47,7 +47,7 @@ def create_refresh_token(user_id: int, session: Session, logger: Logger) -> str:
     data = {"sub": str(user_id)}
     to_encode = data.copy() # Создаём копию словаря, чтобы не изменять оригинал
     expire = datetime.now(timezone.utc) + timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
-    to_encode.update({"exp": expire})
+    to_encode.update({"exp": int(expire.timestamp())}) # Используем timestamp
 
     refresh_token_str = jwt.encode(
         to_encode,
