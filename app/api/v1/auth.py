@@ -1,5 +1,3 @@
-import secrets
-
 from app.core.config import settings
 from app.core.security import get_password_hash, create_access_token, create_refresh_token , verify_password
 from app.database.db import get_session
