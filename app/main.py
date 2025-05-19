@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from contextlib import asynccontextmanager
 import uvicorn
 
 from app.api.v1.auth import router as auth_router
@@ -10,7 +11,14 @@ app = FastAPI(
             version="0.1",
 )
 
-init_db() # Инициализация таблиц в БД, при старте приложения
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    init_db()
+    yield
+    # Код, выполняемый при остановке (если нужен)
+    print("Application shutdown")
+    
+
 
 app.include_router(auth_router, prefix="/API/v0.1")
 app.include_router(test_router, prefix="/API/v0.1")
