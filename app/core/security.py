@@ -54,8 +54,6 @@ def create_refresh_token(user_id: int, session: Session, logger: Logger) -> str:
         settings.SECRET_KEY,
         algorithm=settings.ALGORITHM,
     )
-    logger.debug(expire)
-    logger.debug("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")
 
     refresh_token = RefreshToken(
         token=refresh_token_str,
@@ -63,16 +61,7 @@ def create_refresh_token(user_id: int, session: Session, logger: Logger) -> str:
         expires_at=expire,
     )
 
-    logger.debug(f"RefreshToken expires_at: {refresh_token.expires_at}")
-
     session.add(refresh_token)
     session.commit()
 
     return refresh_token_str
-
-
-
-
-# token = create_refresh_token({"sub": "test"})
-# header = decode(token, key="12343434" ,options={"verify_signature": False}, algorithms=["HS256"])
-# print(header)

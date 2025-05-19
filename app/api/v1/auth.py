@@ -88,15 +88,24 @@ def login(
         user_id=db_user.id,
         session=session,
         logger=logger
-    )  # Явно прописаны все аргументы
+    )
+
+    logger.debug(f"Generated refresh_token: {refresh_token_str}")  # Проверяем, что токен создан
+    if not refresh_token_str:
+        logger.error("refresh_token_str пустой или None!!!!!!!!!!")")
+        raise HTTPException(status_code=500, detail="ошибка генерации refresh token!!!!!!!!!!")
 
     logger.info(f"Успешный вход для {form_data.username}")
-    
-    return {
+
+    response = {
         "access_token": access_token,
         "refresh_token": refresh_token_str,
         "token_type": "bearer",
-    }
+        }
+
+    logger.debug(f"ОТВЕТ МОДЕЛИ: {response}!!!!!!")  # Проверяем, что возвращается
+
+    return response
 
 def get_current_user(
         token: Annotated[str, Depends(oauth2_scheme)],

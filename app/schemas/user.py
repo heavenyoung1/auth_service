@@ -27,6 +27,7 @@ class UserReturn(UserBase):
     model_config = ConfigDict(from_attributes = True)
 
 class Token(BaseModel):
+    refresh_token: str
     access_token: str
     token_type: str
 
