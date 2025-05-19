@@ -11,8 +11,6 @@ from jose import jwt
 import pytest
 import logging
 
-logger = logging.getLogger(__name__)
-
 # Настройка тестовой Базы Данных
 engine = create_engine(settings.TEST_DATABASE_URL, echo=True)
 TestingSession = sessionmaker(engine)
