@@ -92,13 +92,14 @@ def test_login_success(client, user_factory):
         "password": "password"
         }
     )
-    logger.debug(response.json["access_token"])
-    logger.debug(response.json["refresh_token"])
-    logger.debug(response.json())
+    response_data = response.json()
+    logger.debug(f"Access token: {response_data['access_token']}")
+    logger.debug(f"Refresh token: {response_data['refresh_token']}")
+    logger.debug(f"Full response: {response_data}")
     assert response.status_code == 200
-    assert "access_token" in response.json()
-    assert "refresh_token" in response.json()
-    assert response.json()["token_type"] == "bearer"
+    assert "access_token" in response_data
+    assert "refresh_token" in response_data
+    assert response_data["token_type"] == "bearer"
 
 def test_login_wrong_password(client, user_factory):
     """Тест - Логин с неправильным паролем"""
