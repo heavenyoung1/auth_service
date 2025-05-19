@@ -5,8 +5,8 @@ from app.core.security import get_password_hash, create_access_token, create_ref
 from app.database.db import get_session
 from app.models.user import User
 from app.models.token import RefreshToken
-from app.schemas.user import UserCreate, UserReturn, Token
-from app.schemas.token import RefreshTokenRequest
+from app.schemas.user import UserCreate, UserReturn
+from app.schemas.token import RefreshTokenRequest, Token
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
