@@ -84,7 +84,7 @@ def login(
     access_token = create_access_token(data={"sub": db_user.login})
 
     # Генерация refresh-токен (сам токен JWT)
-    refresh_token_str = create_refresh_token(db_user.id, session) # Вручную прописать аргументы!!!
+    refresh_token_str = create_refresh_token(db_user.id, session, logger=logger) # Вручную прописать аргументы!!!
 
     logger.info(f"Успешный вход для {form_data.username}")
     
