@@ -24,7 +24,7 @@ def setup_db():
     Base.metadata.drop_all(bind=engine) # Удаление таблиц
 
 # Подключение к БД при помощи SQLAlchemy
-def test_sqlalchemy_connection(setup_db: tuple[()]):
+def test_sqlalchemy_connection(setup_db: tuple[()]): # TEST PASSED
     with engine.connect() as connection:
         assert connection is not None
         print("Успешное подключение к PostgreSQL через SQLAlchemy!")

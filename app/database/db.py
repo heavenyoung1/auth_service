@@ -13,7 +13,12 @@ engine = create_engine(settings.DATABASE_URL, echo=True) #connect_args=connect_a
 Session = sessionmaker(engine)
 
 def init_db():
-    Base.metadata.create_all(bind=engine)
+    try:
+        Base.metadata.create_all(bind=engine)
+        print("ТАБЛИЦЫ УСПЕШНО СОЗДАНЫ")
+    except Exception as e:
+        print(f"Ошибка создания таблиц: {e}")
+        raise
 
 def get_session():
     with Session() as session:
