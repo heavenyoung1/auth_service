@@ -32,19 +32,7 @@ def create_access_token(data: dict):
     )
     return encoded_jwt
 
-# Создание REFRESH-токена для логина пользователей
-def create_refresh_token(data: dict):
-    to_encode = data.copy() # Создаём копию словаря, чтобы не изменять оригинал
-    expire = datetime.now(timezone.utc) + timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
-    to_encode.update({"exp": expire})
-    encoded_frsh_token = jwt.encode(
-        to_encode,
-        settings.SECRET_KEY,
-        algorithm=settings.ALGORITHM,
-    )
-    return encoded_frsh_token
-
-def create_refresh_token_and_save(user_id: int, session: Session) -> str:
+def create_refresh_token(user_id: int, session: Session) -> str:
     """
     Создаёт JWT refresh_token и сохраняет его в базе данных как объект RefreshToken.
     
@@ -55,13 +43,21 @@ def create_refresh_token_and_save(user_id: int, session: Session) -> str:
     Returns:
         str: Сгенерированный refresh_token (JWT).
     """
-    data = {"sub": user_id}
+    # Подготовка данных для JWT
+    data = {"sub": str(user_id)}
+    to_encode = data.copy() # Создаём копию словаря, чтобы не изменять оригинал
+    expire = datetime.now(timezone.utc) + timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
+    to_encode.update({"exp": expire})
 
-    refresh_token_str = create_refresh_token(data)
+    refresh_token_str = jwt.encode(
+        to_encode,
+        settings.SECRET_KEY,
+        algorithm=settings.ALGORITHM,
+    )
 
     refresh_token = RefreshToken(
         token=refresh_token_str,
-        user_id=user_id.id,
+        user_id=user_id,
     )
 
     session.add(refresh_token)
