@@ -92,7 +92,7 @@ def login(
 
     logger.debug(f"Generated refresh_token: {refresh_token_str}")  # Проверяем, что токен создан
     if not refresh_token_str:
-        logger.error("refresh_token_str пустой или None!!!!!!!!!!")")
+        logger.error("refresh_token_str пустой или None!!!!!!!!!!")
         raise HTTPException(status_code=500, detail="ошибка генерации refresh token!!!!!!!!!!")
 
     logger.info(f"Успешный вход для {form_data.username}")
