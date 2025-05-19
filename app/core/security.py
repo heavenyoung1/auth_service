@@ -63,6 +63,8 @@ def create_refresh_token(user_id: int, session: Session, logger: Logger) -> str:
         expires_at=expire,
     )
 
+    logger.debug(f"RefreshToken expires_at: {refresh_token.expires_at}")
+
     session.add(refresh_token)
     session.commit()
 
