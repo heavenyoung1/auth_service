@@ -58,6 +58,7 @@ def create_refresh_token(user_id: int, session: Session) -> str:
     refresh_token = RefreshToken(
         token=refresh_token_str,
         user_id=user_id,
+        expires_at=expire,
     )
 
     session.add(refresh_token)
