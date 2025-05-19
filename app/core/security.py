@@ -4,10 +4,13 @@ from passlib.context import CryptContext
 from app.core.config import settings
 from sqlalchemy.orm import Session
 from app.models.token import RefreshToken
+import logging
 
 # Для тестов
 # from jose.jwt import decode
 #--------
+
+logger = logging.getLogger(__name__)
 
 # Объект для безопасного хеширования и проверки паролей с помощью библиотеки passlib
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -54,6 +57,7 @@ def create_refresh_token(user_id: int, session: Session) -> str:
         settings.SECRET_KEY,
         algorithm=settings.ALGORITHM,
     )
+    logger.debug(expire)
 
     refresh_token = RefreshToken(
         token=refresh_token_str,
