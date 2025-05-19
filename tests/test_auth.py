@@ -17,6 +17,10 @@ logger = logging.getLogger(__name__)
 engine = create_engine(settings.TEST_DATABASE_URL, echo=True)
 TestingSession = sessionmaker(engine)
 
+@pytest.fixture
+def logger():
+    return logging.getLogger(__name__)
+
 @pytest.fixture(scope="function")
 def setup_db():
     # Создаем таблицы перед тестом
