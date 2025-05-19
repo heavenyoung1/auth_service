@@ -82,7 +82,7 @@ def test_register_short_password(client, user_factory): # TEST PASSED
 
     assert response.status_code == 422, "Ошибка 422, выдаётся Pydantic`ом, валидация происходит в схеме UserCreate"
 
-def test_login_success(client, user_factory):
+def test_login_success(client, user_factory, logger):
     """Тест - Успешный вход"""
     user = user_factory()  # Создание данных пользователя из класса UserData
     # Регистрация пользователя 
