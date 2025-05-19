@@ -14,6 +14,7 @@ Session = sessionmaker(engine)
 
 def init_db():
     try:
+        print(f"Попытка создания таблиц с движком: {engine}")
         Base.metadata.create_all(bind=engine)
         print("ТАБЛИЦЫ УСПЕШНО СОЗДАНЫ")
     except Exception as e:
