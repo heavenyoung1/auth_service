@@ -1,5 +1,6 @@
 from app.main import app
 from app.models.user import Base
+from app.models.token import RefreshToken
 from app.database.db import get_session
 from app.core.config import settings
 
@@ -211,3 +212,22 @@ def test_get_session(client):
     response = client.get("/API/v0.1/test_db_session")
     assert response.status_code == 200
     assert response.json()["ok"] is True
+
+def test_logout_user(client, user_factory, logger):
+    """Тест - выход пользователя из сессии"""
+    user = user_factory()
+    client.post("/API/v0.1/register", json=user.__dict__)
+
+    login_response = client.post("/API/v0.1/login", data={
+        "username": user.login,
+        "password": user.password
+        }
+    )
+    login_response_data = login_response.json()
+    refresh_token = login_response_data["refresh_token"]
+    response = client.post("/API/v0.1/logout", json={"refresh_token": refresh_token})
+    
+    assert response.status_code == 200
+    assert response.json().detail == "Успешный выход"
+
+    

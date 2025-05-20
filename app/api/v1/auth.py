@@ -147,7 +147,6 @@ def get_current_user(
 def read_user_me(current_user = Depends(get_current_user)) -> User:
     return current_user
 
-
 @router.post("/refresh", summary="", description="")
 def refresh_token(
         token_data: RefreshTokenRequest,
@@ -229,6 +228,6 @@ def logout(
 
     logger.info("Пользователь вышел")
 
-    return {"message": "Успешный выход"}
+    return {"detail": "Успешный выход"}
     
     
