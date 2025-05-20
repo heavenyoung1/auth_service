@@ -4,7 +4,7 @@ from app.database.db import get_session
 from app.models.user import User
 from app.models.token import RefreshToken
 from app.schemas.user import UserCreate, UserReturn
-from app.schemas.token import AccessToken, RefreshToken
+from app.schemas.token import AccessToken, RefreshToken, Auth2Token
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
@@ -56,7 +56,7 @@ def register(
         "token_type": "bearer"
     }
 
-@router.post("/login", response_model=RefreshToken, summary="Авторизация пользователя", description="Аутентифицирует пользователя и возвращает токен доступа.")
+@router.post("/login", response_model=Auth2Token, summary="Авторизация пользователя", description="Аутентифицирует пользователя и возвращает токен доступа.")
 def login(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     session: Session = Depends(get_session),
