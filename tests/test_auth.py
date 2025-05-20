@@ -166,13 +166,18 @@ def test_refresh_token_success(client, user_factory, logger):
 
     refresh_token = login_response.json()["refresh_token"]
 
-    response = client.post("/API/v0.1/refresh", json={"refresh_token":refresh_token})
+    response = client.post("/API/v0.1/refresh", json={"refresh_token": refresh_token})
+    response_data = response.json()
 
     logger.info(f"Status code: {response.status_code}")
-    logger.info(f"Response body: {response.json()}")
+    logger.info(f"Response body: {response_data}")
 
     assert response.status_code == 200
-    assert response.json()["refresh_token"] == refresh_token
+    assert "access_token" in response_data
+    assert "refresh_token" in response_data
+    assert "token_type" in response_data
+    assert response_data["token_type"] == "bearer"
+
 
 def test_get_current_user_invalid_token(client, logger):
     """Тест - получение текущего пользователя с некорректным access-token"""
