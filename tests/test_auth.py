@@ -82,7 +82,7 @@ def test_register_short_password(client, user_factory): # TEST PASSED
 
     assert response.status_code == 422, "Ошибка 422, выдаётся Pydantic`ом, валидация происходит в схеме UserCreate"
 
-def test_login_success(client, user_factory, logger):
+def test_login_success(client, user_factory, logger): # TEST PASSED
     """Тест - Успешный вход"""
     user = user_factory()  # Создание данных пользователя из класса UserData
     # Регистрация пользователя 
@@ -103,7 +103,7 @@ def test_login_success(client, user_factory, logger):
     assert "refresh_token" in response_data
     assert response_data["token_type"] == "bearer"
 
-def test_login_wrong_password(client, user_factory):
+def test_login_wrong_password(client, user_factory): # TEST PASSED
     """Тест - Логин с неправильным паролем"""
     user = user_factory()  # Создание данных пользователя из класса UserData
     # Регистрация пользователя 
@@ -119,7 +119,7 @@ def test_login_wrong_password(client, user_factory):
     assert response.status_code == 401
     assert response.json()["detail"] == "Неверный пароль"
 
-def test_login_unexistent_user(client):
+def test_login_unexistent_user(client): # TEST PASSED
     """Тест - Логин несуществующего пользователя (неверный логин)"""    
     response = client.post("/API/v0.1/login", data={
         "username": "testUser111",
@@ -130,7 +130,7 @@ def test_login_unexistent_user(client):
     assert response.status_code == 401
     assert response.json()["detail"] == "Неверный логин"
 
-def test_get_current_user(client, user_factory):
+def test_get_current_user(client, user_factory): # TEST PASSED
     """Тест - получение текущего пользователя"""
     user = user_factory()  # Создание данных пользователя из класса UserData
 
@@ -151,7 +151,7 @@ def test_get_current_user(client, user_factory):
     response = client.get("/API/v0.1/me", headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == 200
 
-def test_refresh_token_success(client, user_factory):
+def test_refresh_token_success(client, user_factory, logger):
     """Тест - обновление access-token успешно"""
     user = user_factory()  # Создание данных пользователя из класса UserData
 
@@ -175,7 +175,7 @@ def test_refresh_token_success(client, user_factory):
     assert "access_token" in response.json()
     assert response.json()["refresh_token"] == refresh_token
 
-def test_get_current_user_invalid_token(client):
+def test_get_current_user_invalid_token(client, logger):
     """Тест - получение текущего пользователя с некорректным access-token"""
     response = client.get("/API/v0.1/me", headers={"Authorization": f"Bearer invalidddd_token"})
     logger.info(f"Status code: {response.status_code}")
