@@ -195,7 +195,7 @@ def test_get_current_user_missing_sub(client):
     response_data = response.json()
 
     assert response.status_code == 401
-    assert response_data["detail"] == "Токен не содержит логина (поле 'sub')"
+    assert response_data["detail"] == "Не удалось подтвердить учетные данные (credentials_exception)"
 
 def test_user_not_found(client):
     """Тест - отработка некорретных sub"""
