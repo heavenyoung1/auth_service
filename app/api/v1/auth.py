@@ -6,7 +6,7 @@ from app.models.token import RefreshToken
 from app.schemas.user import UserCreate, UserReturn
 from app.schemas.token import AccessTokenRequest, RefreshTokenRequest, Auth2Token
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from jose import JWTError, jwt
@@ -110,13 +110,20 @@ def get_current_user(
         session: Session = Depends(get_session),
         logger: Logger = Depends(getLogger),
 ) -> User:
+    
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
         login: str = payload.get("sub")
 
         if login is None:
             logger.warning("Токен не содержит логина (поле 'sub')")
-            raise HTTPException(status_code=401, detail="Токен не содержит логина (поле 'sub')")
+            raise credentials_exception
         
     except JWTError as e:
         logger.warning(f"Ошибка проверки токена: {str(e)}")
@@ -127,7 +134,7 @@ def get_current_user(
 
     if user is None:
         logger.warning(f"Пользователь c логином {login} не найден")
-        raise HTTPException(status_code=401, detail="Пользователь не найден")
+        raise credentials_exception
 
     logger.info(f"Пользователь {login} успешно аутентифицирован")
     return user
