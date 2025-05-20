@@ -175,16 +175,21 @@ def refresh_token(
     # Генерация нового access-token
     access_token = create_access_token(data={"sub": user.login})
 
-    # Генерация refresh-токен (сам токен JWT)
-    new_refresh_token = create_refresh_token(
-        user_id=user.id,
-        session=session,
-        logger=logger
-    )
+    try:
+        # Удаляем старый refresh токен
+        session.delete(refresh_token)  # Удаляем старый refresh_token
+        session.commit()
 
-    # СОМНИТЕЛЬНАЯ ЛОГИКА, НУЖНО ПРВЕРИТЬ РАБОТУ СТРОК ВЫШЕ!!!!!
-    session.delete(refresh_token)  # Удаляем старый refresh_token
-    session.commit()
+        # Генерация refresh-токен (сам токен JWT)
+        new_refresh_token = create_refresh_token(
+            user_id=user.id,
+            session=session,
+            logger=logger
+        )
+
+    except Exception as e:
+        logger.error(f"Ошибка при обновлении токена: {e}")
+        raise HTTPException(status_code=500, detail="Ошибка при обновлении токена")
 
     logger.info(f"Access-токен успешно обновлён для пользователя {user.login}")
 
