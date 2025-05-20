@@ -1,11 +1,11 @@
 from pydantic import BaseModel
 
-class AccessToken(BaseModel):
+class AccessTokenRequest(BaseModel):
     access_token: str
     token_type: str
 
 
-class RefreshToken(BaseModel):
+class RefreshTokenRequest(BaseModel):
     refresh_token: str
 
 class Auth2Token(BaseModel):

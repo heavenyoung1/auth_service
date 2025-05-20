@@ -4,7 +4,7 @@ from app.database.db import get_session
 from app.models.user import User
 from app.models.token import RefreshToken
 from app.schemas.user import UserCreate, UserReturn
-from app.schemas.token import AccessToken, RefreshToken, Auth2Token
+from app.schemas.token import AccessTokenRequest, RefreshTokenRequest, Auth2Token
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
@@ -18,12 +18,12 @@ router = APIRouter(tags=["auth"])
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/API/v0.1/login")
 
-@router.post("/register", response_model=AccessToken,  summary="Регистрация нового пользователя", description="Регистрирует нового пользователя в системе.")
+@router.post("/register", response_model=AccessTokenRequest,  summary="Регистрация нового пользователя", description="Регистрирует нового пользователя в системе.")
 def register(
             user_in: UserCreate, 
             session: Session = Depends(get_session),
             logger: Logger = Depends(getLogger)
-) -> AccessToken:
+) -> AccessTokenRequest:
     
     # Проверка существования пользователя
     db_user = session.query(User).filter(User.login == user_in.login).first()
@@ -61,7 +61,7 @@ def login(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     session: Session = Depends(get_session),
     logger: Logger = Depends(getLogger)
-) -> RefreshToken:
+) -> Auth2Token:
     
     logger.info(f"Попытка входа для login: {form_data.username}")
 
@@ -143,7 +143,7 @@ def read_user_me(current_user = Depends(get_current_user)) -> User:
 
 @router.post("/refresh", summary="", description="")
 def refresh_token(
-        token_data: RefreshToken,
+        token_data: RefreshTokenRequest,
         session: Session = Depends(get_session),
         logger: Logger = Depends(getLogger),
 ):
@@ -203,7 +203,7 @@ def refresh_token(
 
 @router.post("/logout", summary="Выход пользователя из сессии", description="Выход пользователя из сессии")
 def logout(
-    token_data: RefreshToken, 
+    token_data: RefreshTokenRequest, 
     session: Session = Depends(get_session),
     logger: Logger = Depends(getLogger),
 ):
