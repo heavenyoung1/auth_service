@@ -57,7 +57,6 @@
   
         - name: Install backend dependencies
           run: |
-            cd backend
             uv sync --extra dev
             ls -la .venv/bin
             uv run -- python -m pytest --version
