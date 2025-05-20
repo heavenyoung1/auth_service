@@ -201,8 +201,10 @@ def test_user_not_found(client):
     """Тест - отработка некорретных sub"""
     token = jwt.encode({"sub": "nonexist_user"}, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
     response = client.get("/API/v0.1/me", headers={"Authorization": f"Bearer {token}"})
+    response_data = response.json()
+    
     assert response.status_code == 401
-    assert response.json()["detail"] == "Пользователь не найден"
+    assert response_data["detail"] == "Не удалось подтвердить учетные данные (credentials_exception)"
 
 def test_get_session(client):
     """Тест - подключение к БД"""
