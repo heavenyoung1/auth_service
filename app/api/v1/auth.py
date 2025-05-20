@@ -186,12 +186,11 @@ def refresh_token(
             session=session,
             logger=logger
         )
+        logger.info(f"Access-токен успешно обновлён для пользователя {user.login}")
 
     except Exception as e:
         logger.error(f"Ошибка при обновлении токена: {e}")
         raise HTTPException(status_code=500, detail="Ошибка при обновлении токена")
-
-    logger.info(f"Access-токен успешно обновлён для пользователя {user.login}")
 
     response = {
         "access_token": access_token,
