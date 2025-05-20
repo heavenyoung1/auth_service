@@ -12,7 +12,7 @@ from sqlalchemy.orm import Session
 from jose import JWTError, jwt
 from logging import Logger, getLogger
 from typing import Annotated
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 
 router = APIRouter(tags=["auth"])
 
