@@ -222,7 +222,7 @@ def logout(
         logger.warning("Refresh-токен не найден")
         raise HTTPException(status_code=404, detail="Refresh-токен не найден")
     
-    logger.info(refresh_token.user_id)
+    logger.info(refresh_token)
     session.delete(refresh_token)
     session.commit()
 
