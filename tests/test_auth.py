@@ -224,10 +224,16 @@ def test_logout_user(client, user_factory, logger):
         }
     )
     login_response_data = login_response.json()
+    access_token = login_response_data["access_token"]
     refresh_token = login_response_data["refresh_token"]
-    response = client.post("/API/v0.1/logout", json={"refresh_token": refresh_token})
+    response = client.post("/API/v0.1/logout", 
+                           json={"refresh_token": refresh_token},
+                           headers={"Authorization": f"Bearer {access_token}"}
+                           )
+    
+    response_json = response.json()
     
     assert response.status_code == 200
-    assert response.json().detail == "Успешный выход"
+    assert response_json["detail"] == "Успешный выход"
 
     

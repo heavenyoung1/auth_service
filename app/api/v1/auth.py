@@ -217,7 +217,7 @@ def logout(
     logger.info("Попытка выхода пользователя")
 
     # Выборка refresh_token из БД
-    refresh_token = session.query(RefreshToken).filter(RefreshToken.token == token_data.refresh_token).first
+    refresh_token = session.query(RefreshToken).filter(RefreshToken.token == token_data.refresh_token).first()
     if not refresh_token:
         logger.warning("Refresh-токен не найден")
         raise HTTPException(status_code=404, detail="Refresh-токен не найден")
@@ -226,9 +226,13 @@ def logout(
         logger.warning(f"Refresh-токен не принадлежит пользователю {current_user.login}")
         raise HTTPException(status_code=401, detail="Неверный refresh-токен")
     
-    logger.info(refresh_token)
-    session.delete(refresh_token)
-    session.commit()
+    try:
+        session.delete(refresh_token)
+        session.commit()
+    except Exception as e:
+        session.rollback()
+        logger.error(f"Ошибка при удалении refresh_token: {e}")
+        raise HTTPException(status_code=500, detail="Ошибка при выходе из системы")
 
     logger.info("Пользователь вышел")
 
