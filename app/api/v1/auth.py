@@ -143,9 +143,9 @@ def read_user_me(current_user = Depends(get_current_user)) -> User:
 
 @router.post("/refresh", summary="", description="")
 def refresh_token(
-    token_data: RefreshToken,
-    session: Session = Depends(get_session),
-    logger: Logger = Depends(getLogger),
+        token_data: RefreshToken,
+        session: Session = Depends(get_session),
+        logger: Logger = Depends(getLogger),
 ):
     logger.info("Попытка обновления токена")
 
@@ -175,13 +175,26 @@ def refresh_token(
     # Генерация нового access-token
     access_token = create_access_token(data={"sub": user.login})
 
+    # Генерация refresh-токен (сам токен JWT)
+    new_refresh_token = create_refresh_token(
+        user_id=user.id,
+        session=session,
+        logger=logger
+    )
+
+    # СОМНИТЕЛЬНАЯ ЛОГИКА, НУЖНО ПРВЕРИТЬ РАБОТУ СТРОК ВЫШЕ!!!!!
+    session.delete(refresh_token)  # Удаляем старый refresh_token
+    session.commit()
+
     logger.info(f"Access-токен успешно обновлён для пользователя {user.login}")
 
-    return {
+    response = {
         "access_token": access_token,
         "refresh_token": token_data.refresh_token,
         "token_type": "bearer",
     }
+
+    return response
 
 
 @router.post("/logout", summary="Выход пользователя из сессии", description="Выход пользователя из сессии")
