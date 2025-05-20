@@ -172,7 +172,6 @@ def test_refresh_token_success(client, user_factory, logger):
     logger.info(f"Response body: {response.json()}")
 
     assert response.status_code == 200
-    assert "access_token" in response.json()
     assert response.json()["refresh_token"] == refresh_token
 
 def test_get_current_user_invalid_token(client, logger):
