@@ -211,20 +211,19 @@ def refresh_token(
 @router.post("/logout", summary="Выход пользователя из сессии", description="Выход пользователя из сессии")
 def logout(
     token_data: RefreshTokenRequest, 
+    current_user: User = Depends(get_current_user),
     session: Session = Depends(get_session),
     logger: Logger = Depends(getLogger),
 ):
-    
     logger.info("Попытка выхода пользователя")
 
     # Выборка refresh_token из БД
     refresh_token = session.query(RefreshToken).filter(RefreshToken.token == token_data.refresh_token)
-
-    # Проверка существования refresh_token в БД
     if not refresh_token:
         logger.warning("Refresh-токен не найден")
         raise HTTPException(status_code=404, detail="Refresh-токен не найден")
     
+    logger.info(refresh_token.user_id)
     session.delete(refresh_token)
     session.commit()
 
