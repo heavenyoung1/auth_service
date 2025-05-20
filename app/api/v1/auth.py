@@ -150,22 +150,22 @@ def refresh_token(
     logger.info("Попытка обновления токена")
 
     # Выборка refresh_token из БД
-    refresh_token = session.query(RefreshToken).filter(RefreshToken.token == token_data.refresh_token).first()
+    current_refresh_token = session.query(RefreshToken).filter(RefreshToken.token == token_data.refresh_token).first()
 
     # Проверка существования refresh_token в БД
-    if not refresh_token:
+    if not current_refresh_token:
         logger.warning("Refresh-токен не найден")
         raise HTTPException(status_code=404, detail="Refresh-токен не найден")
     
     # Проверка срока действия токена
-    if refresh_token.expires_at and refresh_token.expires_at < datetime.now(timezone.utc):
+    if current_refresh_token.expires_at and current_refresh_token.expires_at < datetime.now(timezone.utc):
         logger.warning("Refresh-токен истёк")
-        session.delete(refresh_token)
+        session.delete(current_refresh_token)
         session.commit()
         raise HTTPException(status_code=401, detail="Refresh-токен истек")
     
     # Выборка пользователя по refresh_token из БД
-    user = session.query(User).filter(User.id == refresh_token.user_id).first()
+    user = session.query(User).filter(User.id == current_refresh_token.user_id).first()
 
     # Проверка существования пользователя по его refresh_token в БД
     if not user:
@@ -177,11 +177,11 @@ def refresh_token(
 
     try:
         # Удаляем старый refresh токен
-        session.delete(refresh_token)  # Удаляем старый refresh_token
+        session.delete(current_refresh_token)  # Удаляем старый refresh_token
         session.commit()
 
         # Генерация refresh-токен (сам токен JWT)
-        new_refresh_token = create_refresh_token(
+        refresh_token = create_refresh_token(
             user_id=user.id,
             session=session,
             logger=logger
@@ -195,7 +195,7 @@ def refresh_token(
 
     response = {
         "access_token": access_token,
-        "refresh_token": token_data.refresh_token,
+        "refresh_token": refresh_token,
         "token_type": "bearer",
     }
 
