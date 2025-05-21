@@ -1,6 +1,7 @@
 from psycopg2 import  connect, Error
 
 from app.core.config import settings
+from app.core.logger import logger
 
 def create_database():
     connection = None # Инициализация переменной
@@ -12,7 +13,7 @@ def create_database():
             user=settings.PG_USER,
             password=settings.PG_PASSWORD,
         )
-        print("✅ Успешное подключение к PostgreSQL!")
+        logger.info("✅ Успешное подключение к PostgreSQL!")
 
         connection.autocommit = True
         cursor = connection.cursor()
@@ -25,18 +26,18 @@ def create_database():
             exists = cursor.fetchone()
             if not exists:
                 cursor.execute(f"CREATE DATABASE {i}")
-                print(f"База данных {i} успешно создана.")
+                logger.info(f"База данных {i} успешно создана")
             else:
-                print(f"База данных {i} уже существует.")
+                logger.info(f"База данных {i} уже существует.")
 
     except Error as e:
-        print(f"Ошибка при создании базы данных: {e}")
+        logger.info(f"❌ Ошибка при создании базы данных: {e}")
 
     finally:
         if connection:
             cursor.close()
             connection.close()
-            print("Соединение закрыто.")
+            logger.info("Соединение закрыто.")
 
 if __name__ == "__main__":
     create_database()
