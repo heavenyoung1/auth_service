@@ -1,34 +1,26 @@
 from app.models.user import User
 from app.core.logger import logger
 
-from tests.conftest import engine, TestingSession, test_session
+from tests.conftest import engine, test_session
 from sqlalchemy import text
 
 
-def get_session():
-    with TestingSession() as session:
-        yield session
-
-
-# Подключение к БД при помощи SQLAlchemy
-def test_sqlalchemy_connection(setup_db: tuple[()]): # TEST PASSED
+def test_sqlalchemy_connection(test_session):
     """ Тест - Подключентие к БД при помощи SQLAlchemy """
-    with engine.connect() as connection:
-        assert connection is not None
-        logger.info("Успешное подключение к PostgreSQL через SQLAlchemy!")
+    assert test_session is not None
+    logger.info("Успешное подключение к PostgreSQL через SQLAlchemy!")
 
     # Получение версии PostgreSQL
     with engine.connect() as connection:
-        version = connection.execute(text("SELECT version();")).scalar() # Как вывести данные
+        version = connection.execute(text("SELECT version();")).scalar()
         logger.info(f"Версия PostgreSQL: {version}")
 
     # Получение списка баз данных
-    with engine.connect() as connection:
-        result = connection.execute(text("SELECT datname FROM pg_database;")) # pg_database — это системная таблица в PostgreSQL
-        database = [row[0] for row in result]
-        logger.info("Список баз данных")
-        for db in database:
-            logger.info(f"БД: {db}")
+    result = test_session.execute(text("SELECT datname FROM pg_database;"))
+    database = [row[0] for row in result]
+    logger.info("Список баз данных")
+    for db in database:
+        logger.info(f"БД: {db}")
 
 def test_create_user(test_session):
     """ Тест - создание тестового пользователя """
