@@ -2,6 +2,7 @@ import psycopg2
 from psycopg2 import OperationalError
 
 from app.core.config import settings
+from app.core.logger import logger
 
 def test_connection():
     conn = None # Инициализация переменной
@@ -13,25 +14,23 @@ def test_connection():
             user=settings.PG_USER,
             password=settings.PG_PASSWORD,
         )
-        print("✅ Успешное подключение к PostgreSQL!")
+        logger.info("✅ Успешное подключение к PostgreSQL!")
         
         # Проверяем версию PostgreSQL
         with conn.cursor() as cursor:
             cursor.execute("SELECT version();")
-            print(cursor.fetchone()[0])
+            logger.info(cursor.fetchone()[0])
             
         # Проверяем список баз данных
         with conn.cursor() as cursor:
             cursor.execute("SELECT datname FROM pg_database;")
-            print("\nСписок баз данных:")
+            logger.info("\nСписок баз данных:")
             for db in cursor.fetchall():
-                print(f"- {db[0]}")
+                logger.info(f"- {db[0]}")
                 
     except OperationalError as e:
-        print(f"❌ Ошибка подключения: {e}")
+        logger.error(f"❌ Ошибка подключения: {e}")
     finally:
         if conn:
             conn.close()
 
-if __name__ == "__main__":
-    test_connection()
