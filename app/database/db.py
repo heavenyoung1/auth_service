@@ -1,28 +1,39 @@
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, Session
 from fastapi import Depends
-from typing import Annotated
+from typing import Annotated, Generator
 
 from app.core.config import settings
 from app.models.user import Base
 
-connect_args = {"echo": True}
+# Создание движка SQLAlchemy
+engine = create_engine(settings.DATABASE_URL, echo=True)
 
-engine = create_engine(settings.DATABASE_URL, echo=True) #connect_args=connect_args
-
-Session = sessionmaker(engine)
+# Фабрика сессий
+SessionLocal = sessionmaker(
+    autocommit=False,
+    autoflush=False,
+    expire_on_commit=False,
+    bind=engine
+)
 
 def init_db():
+    """Создаёт все таблицы в базе данных на основе моделей."""
     try:
         print(f"Попытка создания таблиц с движком: {engine}")
         Base.metadata.create_all(bind=engine)
-        print("ТАБЛИЦЫ УСПЕШНО СОЗДАНЫ")
+        print("✅ Таблицы успешно созданы.")
     except Exception as e:
-        print(f"Ошибка создания таблиц: {e}")
+        print(f"❌ Ошибка создания таблиц: {e}")
         raise
 
-def get_session():
-    with Session() as session:
-        yield session
+def get_session() -> Generator[Session, None, None]:
+    """Предоставляет сессию БД как зависимость FastAPI."""
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
+# Используемый тип для зависимостей FastAPI
 SessionDep = Annotated[Session, Depends(get_session)]
