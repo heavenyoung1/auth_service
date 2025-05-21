@@ -1,27 +1,50 @@
+from app.core.config import settings
+from app.models.token import RefreshToken
+
 from datetime import datetime, timedelta, timezone
 from jose import jwt
 from passlib.context import CryptContext
-from app.core.config import settings
 from sqlalchemy.orm import Session
-from app.models.token import RefreshToken
 from logging import Logger
-
-# Для тестов
-# from jose.jwt import decode
 
 # Объект для безопасного хеширования и проверки паролей с помощью библиотеки passlib
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-# Проверка пароля - сравнение простого и хешированного паролей
-def verify_password(original_password, hashed_password):
+def verify_password(original_password, hashed_password) -> bool:
+    """
+    Проверяет, соответствует ли введённый пароль его хешу.
+
+    Args:
+        original_password (str): Введённый пользователем пароль в открытом виде.
+        hashed_password (str): Хешированный пароль из базы данных.
+
+    Returns:
+        bool: True, если пароли совпадают, иначе False.
+    """
     return pwd_context.verify(original_password, hashed_password)
 
-# Хеширование пароля
-def get_password_hash(password):
+def get_password_hash(password) -> str:
+    """
+    Возвращает хеш от переданного пароля с использованием алгоритма bcrypt.
+
+    Args:
+        password (str): Пароль пользователя.
+
+    Returns:
+        str: Хешированное значение пароля.
+    """
     return pwd_context.hash(password)
 
-# Создание ACCESS-токена для регистрации пользователей
-def create_access_token(data: dict):
+def create_access_token(data: dict) -> str:
+    """
+    Создаёт JWT access-токен с ограниченным сроком действия.
+
+    Args:
+        data (dict): Словарь с данными (например, {'sub': 'user_id'}) для шифрования в токене.
+
+    Returns:
+        str: Сгенерированный access-токен (JWT).
+    """
     to_encode = data.copy()
     expire = datetime.now(timezone.utc) + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire})
