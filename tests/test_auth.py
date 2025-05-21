@@ -1,14 +1,7 @@
-from app.main import app
-from app.models.user import Base
-from app.models.token import RefreshToken
-from app.database.db import get_session
 from app.core.config import settings
 from app.core.logger import logger
 
 from dataclasses import dataclass
-from fastapi.testclient import TestClient
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy import create_engine
 from jose import jwt
 import pytest
 

@@ -20,35 +20,25 @@ def test_data():
         "iat": 1709837200
     }
 
-# Проверка пароля - успешная
 def test_verify_password_success(test_password: Literal['test_password']):
-    # Хешируем тестовый пароль
+    """ Тест - проверка корректного хеширования пароля """
     hashed_password = pwd_context.hash(test_password)
-
-    # Проверяем, что функция возвращает True для верного пароля
     assert verify_password(test_password, hashed_password) is True
 
-# Проверка пароля - НЕуспешная
 def test_verify_password_failure(test_password: Literal['test_password']):
-    # Хешируем тестовый пароль
+    """ Тест - проверка некорректного ввода пароля """
     hashed_password = pwd_context.hash(test_password)
-
-    # Проверяем, что функция возвращает False для неверного пароля
     assert verify_password("wrong_password", hashed_password) is False
 
-# Проверка пустого пароля
 def test_verify_password_empty(test_password: Literal['test_password']):
-    # Хешируем тестовый пароль
+    """ Тест - проверка ввода пустого пароля"""
     hashed_password = pwd_context.hash(test_password)
-
     assert verify_password("", hashed_password) is False
 
-# ---------------- ТЕСТЫ ДЛЯ ТОКЕНА ---------------- #
 def test_create_access_token(test_data: dict):
-    # Вызов функции 
+    """ Тест - Создание Access-Token"""
     token = create_access_token(test_data)
 
-    # Проверки
     assert isinstance(token, str), "Токен должен быть строкой"
     assert len(token.split(".")) == 3, "Неверный формат JWT (должно быть 3 части)"
 
@@ -60,7 +50,7 @@ def test_create_access_token(test_data: dict):
     assert "iat" in decoded, "Токен должен содержать момент создания"
 
 def test_token_expiration(test_data: dict):
-    # Вызов функции 
+    """ Тест - проверка корректного времени действия токена """
     token = create_access_token(test_data)
     decoded = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
 
@@ -68,7 +58,6 @@ def test_token_expiration(test_data: dict):
     excepted_exp = datetime.now(timezone.utc) + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     actual_exp = datetime.fromtimestamp(decoded["exp"], tz=timezone.utc)
 
-    # Время ОКОНЧАНИЯ ДЕЙСТВИЯ токена -  Допустимая погрешность ±5 секунд
     assert abs((excepted_exp - actual_exp).total_seconds()) < 5, "Неверный срок действия токена"
 
 

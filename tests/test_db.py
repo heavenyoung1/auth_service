@@ -1,19 +1,20 @@
 from app.models.user import User
 from app.core.logger import logger
 
-from tests.conftest import engine, test_session
+from tests.conftest import engine
 from sqlalchemy import text
 
 
 def test_sqlalchemy_connection(test_session):
     """ Тест - Подключентие к БД при помощи SQLAlchemy """
-    assert test_session is not None
-    logger.info("Успешное подключение к PostgreSQL через SQLAlchemy!")
+    # Проверка, что сессия не None и поддерживает выполнение запросов
+    assert test_session is not None, "Сессия не инициализирована"
+    logger.info("Сессия SQLAlchemy успешно создана.")
 
     # Получение версии PostgreSQL
-    with engine.connect() as connection:
-        version = connection.execute(text("SELECT version();")).scalar()
-        logger.info(f"Версия PostgreSQL: {version}")
+    version = test_session.execute(text("SELECT version();")).scalar()
+    assert isinstance(version, str) and "PostgreSQL" in version, "Невозможно получить версию PostgreSQL"
+    logger.info(f"Версия PostgreSQL: {version}")
 
     # Получение списка баз данных
     result = test_session.execute(text("SELECT datname FROM pg_database;"))
@@ -21,6 +22,7 @@ def test_sqlalchemy_connection(test_session):
     logger.info("Список баз данных")
     for db in database:
         logger.info(f"БД: {db}")
+
 
 def test_create_user(test_session):
     """ Тест - создание тестового пользователя """
@@ -37,6 +39,8 @@ def test_create_user(test_session):
 
     # Проверка создания пользователя (что он был создан)
     db_user = test_session.query(User).filter(User.login == "testlogin").first()
+    logger.info(f"Метод __repr__: {db_user}")
+
     assert db_user is not None, "Пользователь не был создан"
     assert db_user.login == "testlogin"
-    logger.info(f"Метод __repr__: {db_user}")
+
