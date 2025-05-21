@@ -1,13 +1,11 @@
-import psycopg2
-from psycopg2 import Error
+from psycopg2 import  connect, Error
 
 from app.core.config import settings
-
 
 def create_database():
     connection = None # Инициализация переменной
     try:
-        connection = psycopg2.connect(
+        connection = connect(
             host=settings.PG_HOST,
             database="postgres",
             port=settings.PG_PORT,
