@@ -3,6 +3,7 @@ from app.models.user import Base
 from app.models.token import RefreshToken
 from app.database.db import get_session
 from app.core.config import settings
+from app.core.logger import logger
 
 from dataclasses import dataclass
 from fastapi.testclient import TestClient
@@ -10,15 +11,10 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 from jose import jwt
 import pytest
-import logging
 
 # Настройка тестовой Базы Данных
 engine = create_engine(settings.TEST_DATABASE_URL, echo=True)
 TestingSession = sessionmaker(engine)
-
-@pytest.fixture
-def logger():
-    return logging.getLogger(__name__)
 
 @pytest.fixture(scope="function")
 def setup_db():
@@ -83,7 +79,7 @@ def test_register_short_password(client, user_factory): # TEST PASSED
 
     assert response.status_code == 422, "Ошибка 422, выдаётся Pydantic`ом, валидация происходит в схеме UserCreate"
 
-def test_login_success(client, user_factory, logger): # TEST PASSED
+def test_login_success(client, user_factory): # TEST PASSED
     """Тест - Успешный вход"""
     user = user_factory()  # Создание данных пользователя из класса UserData
     # Регистрация пользователя 
@@ -99,6 +95,7 @@ def test_login_success(client, user_factory, logger): # TEST PASSED
     logger.debug(f"Access token: {response_data['access_token']}")
     logger.debug(f"Refresh token: {response_data['refresh_token']}")
     logger.debug(f"Full response: {response_data}")
+
     assert response.status_code == 200
     assert "access_token" in response_data
     assert "refresh_token" in response_data
@@ -152,7 +149,7 @@ def test_get_current_user(client, user_factory): # TEST PASSED
     response = client.get("/API/v0.1/me", headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == 200
 
-def test_refresh_token_success(client, user_factory, logger):
+def test_refresh_token_success(client, user_factory):
     """Тест - обновление access-token успешно"""
     user = user_factory()  # Создание данных пользователя из класса UserData
 
@@ -180,7 +177,7 @@ def test_refresh_token_success(client, user_factory, logger):
     assert response_data["token_type"] == "bearer"
 
 
-def test_get_current_user_invalid_token(client, logger):
+def test_get_current_user_invalid_token(client):
     """Тест - получение текущего пользователя с некорректным access-token"""
     response = client.get("/API/v0.1/me", headers={"Authorization": f"Bearer invalidddd_token"})
     logger.info(f"Status code: {response.status_code}")
@@ -213,7 +210,7 @@ def test_get_session(client):
     assert response.status_code == 200
     assert response.json()["ok"] is True
 
-def test_logout_user(client, user_factory, logger):
+def test_logout_user(client, user_factory):
     """Тест - выход пользователя из сессии"""
     user = user_factory()
     client.post("/API/v0.1/register", json=user.__dict__)

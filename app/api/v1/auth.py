@@ -1,5 +1,6 @@
 from app.core.config import settings
 from app.core.security import get_password_hash, create_access_token, create_refresh_token , verify_password
+from app.core.logger import logger
 from app.database.db import get_session
 from app.models.user import User
 from app.models.token import RefreshToken
@@ -10,7 +11,6 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from jose import JWTError, jwt
-from logging import Logger, getLogger
 from typing import Annotated
 from datetime import datetime, timezone
 
@@ -22,7 +22,6 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/API/v0.1/login")
 def register(
             user_in: UserCreate, 
             session: Session = Depends(get_session),
-            logger: Logger = Depends(getLogger)
 ) -> AccessTokenRequest:
     
     # Проверка существования пользователя
@@ -51,16 +50,17 @@ def register(
 
     logger.info(f"Пользователь {user_in.login} успешно зарегистрирован, id: {db_user.id}")
 
-    return {
+    response = {
         "access_token": access_token, 
         "token_type": "bearer"
     }
+
+    return response
 
 @router.post("/login", response_model=Auth2Token, summary="Авторизация пользователя", description="Аутентифицирует пользователя и возвращает токен доступа.")
 def login(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     session: Session = Depends(get_session),
-    logger: Logger = Depends(getLogger)
 ) -> Auth2Token:
     
     logger.info(f"Попытка входа для login: {form_data.username}")
@@ -85,13 +85,11 @@ def login(
     refresh_token_str = create_refresh_token(
         user_id=db_user.id,
         session=session,
-        logger=logger
     )
 
-    logger.debug(f"Generated refresh_token: {refresh_token_str}")  # Проверяем, что токен создан
+    logger.debug(f"Refresh-token: {refresh_token_str}")
     if not refresh_token_str:
-        logger.error("refresh_token_str пустой или None!!!!!!!!!!")
-        raise HTTPException(status_code=500, detail="ошибка генерации refresh token!!!!!!!!!!")
+        raise HTTPException(status_code=500, detail="Ошибка создания refresh-token!")
 
     logger.info(f"Успешный вход для {form_data.username}")
 
@@ -101,14 +99,11 @@ def login(
         "token_type": "bearer",
         }
 
-    logger.debug(f"ОТВЕТ МОДЕЛИ: {response}!!!!!!")  # Проверяем, что возвращается
-
     return response
 
 def get_current_user(
         token: Annotated[str, Depends(oauth2_scheme)],
         session: Session = Depends(get_session),
-        logger: Logger = Depends(getLogger),
 ) -> User:
     
     credentials_exception = HTTPException(
@@ -151,7 +146,6 @@ def read_user_me(current_user = Depends(get_current_user)) -> User:
 def refresh_token(
         token_data: RefreshTokenRequest,
         session: Session = Depends(get_session),
-        logger: Logger = Depends(getLogger),
 ):
     logger.info("Попытка обновления токена")
 
@@ -178,21 +172,19 @@ def refresh_token(
         logger.warning("Пользователь не найден")
         raise HTTPException(status_code=404, detail="Пользователь не найден")
     
-    # Генерация нового access-token
+    # Создание нового access-token
     access_token = create_access_token(data={"sub": user.login})
 
     try:
         # Удаляем старый refresh токен
-        session.delete(current_refresh_token)  # Удаляем старый refresh_token
+        session.delete(current_refresh_token)
         session.commit()
 
-        # Генерация refresh-токен (сам токен JWT)
+        # Создаyние refresh-токен
         refresh_token = create_refresh_token(
             user_id=user.id,
             session=session,
-            logger=logger
         )
-        logger.info(f"Access-токен успешно обновлён для пользователя {user.login}")
 
     except Exception as e:
         logger.error(f"Ошибка при обновлении токена: {e}")
@@ -206,13 +198,11 @@ def refresh_token(
 
     return response
 
-
 @router.post("/logout", summary="Выход пользователя из сессии", description="Выход пользователя из сессии")
 def logout(
     token_data: RefreshTokenRequest, 
     current_user: User = Depends(get_current_user),
     session: Session = Depends(get_session),
-    logger: Logger = Depends(getLogger),
 ):
     logger.info("Попытка выхода пользователя")
 

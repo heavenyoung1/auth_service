@@ -5,7 +5,6 @@ from datetime import datetime, timedelta, timezone
 from jose import jwt
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
-from logging import Logger
 
 # Объект для безопасного хеширования и проверки паролей с помощью библиотеки passlib
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -53,9 +52,10 @@ def create_access_token(data: dict) -> str:
         settings.SECRET_KEY, 
         algorithm=settings.ALGORITHM,
     )
+
     return encoded_jwt
 
-def create_refresh_token(user_id: int, session: Session, logger: Logger) -> str:
+def create_refresh_token(user_id: int, session: Session) -> str:
     """
     Создаёт JWT refresh_token и сохраняет его в базе данных как объект RefreshToken.
     
