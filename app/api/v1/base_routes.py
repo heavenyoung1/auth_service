@@ -8,11 +8,11 @@ router = APIRouter(tags=["test"])
 
 @router.get("/", summary="Домашний эндпоинт", description="Домашний эндпоинт")
 def read_root():
-    return {"Hello": "World"}
+    return {"message": "Hello World"}
 
 @router.get("/test", summary="Тестовый эндпоинт", description="Тестовый эндпоинт")
 async def test():
-    return {"message": "Hello from FastAPI"}
+    return {"message": "Hello Test"}
 
 @router.get("/test_db_session", summary="Тестовое подключение к БД", description="Тестовое подключение к БД")
 def test_db_session(session: Session = Depends(get_session)):

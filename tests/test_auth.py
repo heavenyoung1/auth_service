@@ -12,17 +12,6 @@ from sqlalchemy import create_engine
 from jose import jwt
 import pytest
 
-# Настройка тестовой Базы Данных
-engine = create_engine(settings.TEST_DATABASE_URL, echo=True)
-TestingSession = sessionmaker(engine)
-
-@pytest.fixture(scope="function")
-def setup_db():
-    # Создаем таблицы перед тестом
-    Base.metadata.create_all(bind=engine)
-    yield
-    # Удаляем таблицы после теста
-    Base.metadata.drop_all(bind=engine)
 
 # Фабрика для генерации данных пользователя
 @dataclass
@@ -37,22 +26,6 @@ def user_factory():
     def create_user(**kwargs):
         return UserData(**kwargs)
     return create_user
-
-@pytest.fixture
-def client(setup_db):
-    def override_get_session():
-        with TestingSession() as session:
-            yield session
-
-    # Подменяем зависимость для тестов
-    app.dependency_overrides[get_session] = override_get_session
-
-    # Создаем тестовый клиент
-    with TestClient(app) as client:
-        yield client
-
-    # Очищаем переопределения после теста
-    app.dependency_overrides.clear()
 
 def test_register_success(client, user_factory): # TEST PASSED
     """Тест - успешная регистрация пользователя"""
@@ -203,12 +176,6 @@ def test_user_not_found(client):
     
     assert response.status_code == 401
     assert response_data["detail"] == "Не удалось подтвердить учетные данные (credentials_exception)"
-
-def test_get_session(client):
-    """Тест - подключение к БД"""
-    response = client.get("/API/v0.1/test_db_session")
-    assert response.status_code == 200
-    assert response.json()["ok"] is True
 
 def test_logout_user(client, user_factory):
     """Тест - выход пользователя из сессии"""
