@@ -5,8 +5,8 @@ from tests.conftest import engine
 from sqlalchemy import text
 
 
-def test_sqlalchemy_connection(test_session):
-    """ Тест - Подключентие к БД при помощи SQLAlchemy """
+def test_connection_db(test_session):
+    """ Тест - Подключение к БД при помощи SQLAlchemy """
     # Проверка, что сессия не None и поддерживает выполнение запросов
     assert test_session is not None, "Сессия не инициализирована"
     logger.info("Сессия SQLAlchemy успешно создана.")
@@ -25,7 +25,7 @@ def test_sqlalchemy_connection(test_session):
 
 
 def test_create_user(test_session):
-    """ Тест - создание тестового пользователя """
+    """ Тест - создание тестового пользователя, вручную """
     user = User(
         login="testlogin",
         fullname="Test User",
