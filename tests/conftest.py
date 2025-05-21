@@ -21,6 +21,11 @@ def setup_db():
     Base.metadata.drop_all(bind=engine)
 
 @pytest.fixture
+def test_session(setup_db):
+    with TestingSession() as session:
+        yield session
+
+@pytest.fixture
 def client(setup_db):
     def override_get_session():
         with TestingSession() as session:
