@@ -1,20 +1,26 @@
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import Optional
 
 class Settings(BaseSettings):
-    DATABASE_URL: str
-    TEST_DATABASE_URL: Optional[str] = None # Добавляем опциональное поле
-    SECRET_KEY: str
-    ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30   # минуты
-    REFRESH_TOKEN_EXPIRE_DAYS: int = 30     # дни
+    # --- Токены --- 
+    SECRET_KEY: str = Field(description="Секретный ключ для JWT")
+    ALGORITHM: str = Field(default="HS256", description="Алгоритм шифрования JWT")
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(default=30, description="Время жизни access-токена в минутах")
+    REFRESH_TOKEN_EXPIRE_DAYS: int = Field(default=30, description="Время жизни refresh-токена в днях")
 
-    PG_HOST: str
-    PG_DB: str
-    PG_PORT: str
-    PG_USER: str
-    PG_PASSWORD: str
+    # --- База данных --- 
+    DATABASE_URL: str = Field(description="URL основной базы данных")
+    TEST_DATABASE_URL: Optional[str] = Field(default=None, description="URL тестовой базы данных")
 
+    # --- Параметры подключения к PostgreSQL ---
+    PG_HOST: str = Field(description="Хост PostgreSQL")
+    PG_DB: str = Field(description="Название базы данных")
+    PG_PORT: str = Field(description="Порт подключения к базе данных")
+    PG_USER: str = Field(description="Имя пользователя PostgreSQL")
+    PG_PASSWORD: str = Field(description="Пароль PostgreSQL")
+
+    # --- Конфигурация ---
     model_config = SettingsConfigDict(
         env_file = ".env",
         env_file_encoding = "utf-8"
