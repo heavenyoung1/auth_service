@@ -1,6 +1,8 @@
 from app.core.config import settings
 from app.core.logger import logger
+from app.models.token import RefreshToken
 
+from datetime import datetime, timedelta, timezone
 from unittest.mock import patch
 from dataclasses import dataclass
 from jose import jwt
@@ -172,6 +174,7 @@ def test_user_not_found(client):
     assert response_data["detail"] == "Не удалось подтвердить учетные данные (credentials_exception)"
 
 def test_error_creating_refresh_token(client, user_factory):
+    """Тест - ошибка создания refresh_token """
     user = user_factory()  # Создание данных пользователя из класса UserData
 
     client.post("/API/v0.1/register", json=user.__dict__)
@@ -191,6 +194,7 @@ def test_error_creating_refresh_token(client, user_factory):
         logger.info(login_json)
 
 def test_refresh_token_not_found(client, user_factory):
+    """Тест - Refresh-token не найден"""
     user = user_factory()  # Создание данных пользователя из класса UserData
     client.post("/API/v0.1/register", json=user.__dict__)
     client.post("/API/v0.1/login", data={
@@ -205,18 +209,29 @@ def test_refresh_token_not_found(client, user_factory):
     assert refresh_response.status_code == 404
     assert refresh_response.json()["detail"] == "Refresh-токен не найден"
 
-def test_token_lifetime_test(client, user_factory):
-    user = user_factory()  # Создание данных пользователя из класса UserData
+def test_token_lifetime(client, user_factory, test_session):
+    """Тест - проверка жизни токена """
+    user = user_factory()
     client.post("/API/v0.1/register", json=user.__dict__)
-    client.post("/API/v0.1/login", data={
+    login_response = client.post("/API/v0.1/login", data={
         "username": user.login,
         "password": user.password
         }
     )
-    refresh_response = client.post("/API/v0.1/refresh", json={
-        "refresh_token": "QWERTY12345",
-        }
-    )
+    refresh_token = login_response.json().get("refresh_token")
+    db_token = test_session.query(RefreshToken).filter(RefreshToken.token == refresh_token).first()
+
+    future_time = db_token.expires_at + timedelta(seconds=1)
+    with patch("app.api.v1.auth.datetime") as mock_datetime:
+        mock_datetime.now.return_value = future_time
+        mock_datetime.timezone.utc = timezone.utc
+
+        refresh_response = client.post("/API/v0.1/refresh", json={
+            "refresh_token": refresh_token,
+            }
+        )
+    assert refresh_response.status_code == 401
+    assert refresh_response.json()["detail"] == "Refresh-токен истек"
 
 def test_logout_user(client, user_factory):
     """Тест - выход пользователя из сессии"""
