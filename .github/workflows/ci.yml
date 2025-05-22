@@ -18,8 +18,8 @@
           image: postgres:15
           env:
             POSTGRES_USER: ${{ secrets.POSTGRES_USER_SECRET }}
-            POSTGRES_PASSWORD: P@ssw0rd
-            POSTGRES_DB: auth_db
+            POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD_SECRET }}
+            POSTGRES_DB: ${{ vars.PG_DB }}
           ports:
             - 5432:5432
           options: >-
