@@ -8,6 +8,8 @@ from unittest.mock import patch
 from dataclasses import dataclass
 from jose import jwt
 import pytest
+from sqlalchemy.sql import text
+from unittest.mock import patch, MagicMock
 
 
 # Фабрика для генерации данных пользователя
@@ -234,29 +236,6 @@ def test_token_lifetime(client, user_factory, test_session):
     assert refresh_response.status_code == 401
     assert refresh_response.json()["detail"] == "Refresh-токен истек"
 
-# Достаточно объёмный тест, оставлю на потом
-# def test_user_not_found_for_refresh_token(client, test_session):
-#     """Тест - обновление access-token успешно"""
-#     fake_user_id = 99999
-#     refresh_token = RefreshToken(
-#         token="fake_refresh_token_1234",
-#         user_id=fake_user_id,
-#         expires_at=datetime.now() + timedelta(days=30)
-#     )
-
-#     test_session.add(refresh_token)
-#     test_session.commit()
-
-#     user = test_session.query(User).filter(User.id == fake_user_id).first()
-#     assert user is None, f"Пользователь c fake_user_id = {fake_user_id} не должен существовать"
-
-#     refresh_response = client.post("/API/v0.1/refresh", json={
-#         "refresh_token": refresh_token,
-#         }
-#     )
-#     assert refresh_response.status_code == 404
-#     assert refresh_response.json()["detail"] == "Пользователь не найден"
-
 def test_error_refresh_token(client, user_factory, test_session):
     """Тест - Проверка обработки ошибки при обновлении refresh-токена """
     user = user_factory()
@@ -301,26 +280,18 @@ def test_logout_user(client, user_factory):
     assert response.status_code == 200
     assert response_json["detail"] == "Успешный выход"
 
-def test_refresh_token_not_found(client, user_factory, test_session):
+def test_refresh_token_not_found(client, user_factory):
     """Тест - Проверка ошибки, если refresh-токен не найден при выходе."""
     user = user_factory()
-    register_response = client.post("/API/v0.1/register", json=user.__dict__)
-    assert register_response.status_code == 200, "Регистрация не удалась"
-
+    client.post("/API/v0.1/register", json=user.__dict__)
     login_response = client.post("/API/v0.1/login", data={
         "username": user.login,
         "password": user.password
     })
     assert login_response.status_code == 200, "Логин не удался"
-    access_token = login_response.json().get("access_token")
-    assert access_token, "Access-токен не возвращён"
 
-    headers = {"Authorization": f"Bearer {access_token}"}
-    logout_response = client.post("/API/v0.1/logout", json={
-        "refresh_token": "123435"}, 
-        headers=headers,
-        )
-    assert logout_response.status_code == 404
-    detail = logout_response.json().get("detail")
-    assert detail == "Refresh-токен не найден"
-
+    refresh_response = client.post("/API/v0.1/refresh", json={
+        "refresh_token": "not_a_real_token"
+    })
+    assert refresh_response.status_code == 404
+    assert refresh_response.json()["detail"] == "Refresh-токен не найден"

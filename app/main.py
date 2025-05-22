@@ -6,17 +6,17 @@ from app.api.v1.auth import router as auth_router
 from app.api.v1.base_routes import router as base_router
 from app.database.db import init_db
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    init_db()
-    yield
-    # Код, выполняемый при остановке (если нужен)
-    print("Application shutdown")
+# @asynccontextmanager
+# async def lifespan(app: FastAPI):
+#     init_db()
+#     yield
+#     # Код, выполняемый при остановке (если нужен)
+#     print("Application shutdown")
 
 app = FastAPI(
             title="Сервис авторизации",
             version="0.1",
-            lifespan=lifespan
+            #lifespan=lifespan,
 )
 
 app.include_router(auth_router, prefix="/API/v0.1")

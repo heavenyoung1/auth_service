@@ -1,7 +1,6 @@
 from app.models.user import User
 from app.core.logger import logger
 
-from tests.conftest import engine
 from sqlalchemy import text
 
 
@@ -43,4 +42,3 @@ def test_create_user(test_session):
 
     assert db_user is not None, "Пользователь не был создан"
     assert db_user.login == "testlogin"
-
