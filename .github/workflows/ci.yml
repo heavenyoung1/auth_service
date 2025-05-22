@@ -43,7 +43,7 @@
             done
             psql -h localhost -p 5432 -U postgres -c "CREATE DATABASE auth_test_db;"
           env:
-            PGPASSWORD: P@ssw0rd
+            PGPASSWORD: ${{ secrets.POSTGRES_PASSWORD_SECRET }}
   
         - name: Set up Python
           uses: actions/setup-python@v5
