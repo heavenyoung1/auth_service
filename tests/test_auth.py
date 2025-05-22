@@ -279,7 +279,7 @@ def test_error_refresh_token(client, user_factory, test_session):
     logger.info("Тест обработки ошибки при обновлении refresh-токена успешен") 
 
 def test_logout_user(client, user_factory):
-    """Тест - выход пользователя из сессии"""
+    """Тест - выход пользователя из сессии """
     user = user_factory()
     client.post("/API/v0.1/register", json=user.__dict__)
 
