@@ -301,4 +301,26 @@ def test_logout_user(client, user_factory):
     assert response.status_code == 200
     assert response_json["detail"] == "Успешный выход"
 
-    
+def test_refresh_token_not_found(client, user_factory, test_session):
+    """Тест - Проверка ошибки, если refresh-токен не найден при выходе."""
+    user = user_factory()
+    register_response = client.post("/API/v0.1/register", json=user.__dict__)
+    assert register_response.status_code == 200, "Регистрация не удалась"
+
+    login_response = client.post("/API/v0.1/login", data={
+        "username": user.login,
+        "password": user.password
+    })
+    assert login_response.status_code == 200, "Логин не удался"
+    access_token = login_response.json().get("access_token")
+    assert access_token, "Access-токен не возвращён"
+
+    headers = {"Authorization": f"Bearer {access_token}"}
+    logout_response = client.post("/API/v0.1/logout", json={
+        "refresh_token": "123435"}, 
+        headers=headers,
+        )
+    assert logout_response.status_code == 404
+    detail = logout_response.json().get("detail")
+    assert detail == "Refresh-токен не найден"
+
