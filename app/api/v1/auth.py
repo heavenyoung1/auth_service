@@ -158,7 +158,7 @@ def refresh_token(
         raise HTTPException(status_code=404, detail="Refresh-токен не найден")
     
     # Проверка срока действия токена
-    if current_refresh_token.expires_at and current_refresh_token.expires_at < datetime.now(timezone.utc):
+    if current_refresh_token.expires_at < datetime.now(timezone.utc):
         logger.warning("Refresh-токен истёк")
         session.delete(current_refresh_token)
         session.commit()

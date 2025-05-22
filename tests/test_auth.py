@@ -205,6 +205,19 @@ def test_refresh_token_not_found(client, user_factory):
     assert refresh_response.status_code == 404
     assert refresh_response.json()["detail"] == "Refresh-токен не найден"
 
+def test_token_lifetime_test(client, user_factory):
+    user = user_factory()  # Создание данных пользователя из класса UserData
+    client.post("/API/v0.1/register", json=user.__dict__)
+    client.post("/API/v0.1/login", data={
+        "username": user.login,
+        "password": user.password
+        }
+    )
+    refresh_response = client.post("/API/v0.1/refresh", json={
+        "refresh_token": "QWERTY12345",
+        }
+    )
+
 def test_logout_user(client, user_factory):
     """Тест - выход пользователя из сессии"""
     user = user_factory()
