@@ -1,6 +1,7 @@
 from app.core.config import settings
 from app.core.logger import logger
 
+from unittest.mock import patch
 from dataclasses import dataclass
 from jose import jwt
 import pytest
@@ -169,6 +170,26 @@ def test_user_not_found(client):
     
     assert response.status_code == 401
     assert response_data["detail"] == "Не удалось подтвердить учетные данные (credentials_exception)"
+
+def test_error_creating_refresh_token(client, user_factory):
+    user = user_factory()  # Создание данных пользователя из класса UserData
+
+    client.post("/API/v0.1/register", json=user.__dict__)
+
+    # Мокирование create_refresh_token для возврата None
+    with patch("app.api.v1.auth.create_refresh_token", return_value=None) as mock_refresh:
+        # Логин пользователя
+        login_response = client.post("/API/v0.1/login", data={
+            "username": user.login,
+            "password": user.password
+            }
+        )
+        logger.info(f"Mock called: {mock_refresh.called}")
+        assert login_response.status_code == 500
+        login_json = login_response.json()
+        assert login_json["detail"] == "Ошибка создания refresh-token!"
+        logger.info(login_json)
+
 
 def test_logout_user(client, user_factory):
     """Тест - выход пользователя из сессии"""
