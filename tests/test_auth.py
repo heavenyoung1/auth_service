@@ -295,3 +295,5 @@ def test_refresh_token_not_found(client, user_factory):
     })
     assert refresh_response.status_code == 404
     assert refresh_response.json()["detail"] == "Refresh-токен не найден"
+
+
