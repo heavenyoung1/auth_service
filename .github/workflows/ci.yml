@@ -76,6 +76,11 @@
           run: |
             uv run -- python -m pytest tests/ --cov=app --cov-report=xml
   
+        - name: Run migrations
+          run: |
+            alembic check
+            alembic upgrade head
+
         - name: Upload coverage report
           uses: codecov/codecov-action@v5
           with:
