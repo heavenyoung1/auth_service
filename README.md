@@ -127,7 +127,7 @@ source .venv/bin/activate
 ```
 ### Установка зависимостей из файла pyproject.toml
 ```
-uv sync
+uv sync --all-extras
 ```
 
 ### Настройка файла окружения (.env)
