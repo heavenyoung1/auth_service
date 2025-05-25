@@ -7,6 +7,8 @@ from fastapi.testclient import TestClient
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 import pytest
+import psycopg2
+from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
 # Настройка тестовой Базы Данных
 engine = create_engine(settings.TEST_DATABASE_URL, echo=True)
@@ -40,3 +42,38 @@ def client(setup_db):
 
     # Очищаем переопределения после теста
     app.dependency_overrides.clear()
+
+# Настройки подключения к PostgreSQL
+POSTGRES_USER = "postgres"
+POSTGRES_PASSWORD = "P@ssw0rd"
+POSTGRES_HOST = "192.168.1.75"
+POSTGRES_PORT = "5432"
+ADMIN_DB = "postgres"
+
+# @pytest.fixture(scope="session")
+# def admin_connection():
+#     connection = psycopg2.connect(
+#         dbname=ADMIN_DB,
+#         user=POSTGRES_USER,
+#         password=POSTGRES_PASSWORD,
+#         host=POSTGRES_HOST,
+#         port=POSTGRES_PORT,    
+#     )
+#     connection.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+#     yield connection
+#     connection.close()
+
+# Фикстура для подключения к конкретной базе
+@pytest.fixture
+def db_connection(request):
+    """Фикстура для подключения к указанной базе данных."""
+    db_name = request.param
+    connection = psycopg2.connect(
+        dbname=db_name,
+        user=POSTGRES_USER,
+        password=POSTGRES_PASSWORD,
+        host=POSTGRES_HOST,
+        port=POSTGRES_PORT
+    )
+    yield connection
+    connection.close()

@@ -2,7 +2,7 @@ from app.models.user import User
 from app.core.logger import logger
 
 from sqlalchemy import text
-
+import pytest
 
 def test_connection_db(test_session):
     """ Тест - Подключение к БД при помощи SQLAlchemy """
@@ -42,3 +42,26 @@ def test_create_user(test_session):
 
     assert db_user is not None, "Пользователь не был создан"
     assert db_user.login == "testlogin"
+
+# Список баз данных для проверки
+DATABASES = ["auth_db", "auth_test_db"]
+
+# Ожидаемые таблицы
+EXPECTED_TABLES = {"users", "refresh_tokens", "alembic_version"}
+
+@pytest.mark.parametrize("db_connection", DATABASES, indirect=True)
+def test_table_exist(db_connection):
+    cursor = db_connection.cursor()
+
+    cursor.execute("""
+    SELECT table_name
+    FROM information_schema.tables
+    WHERE table_schema = 'public'
+    """)
+    tables = {row[0] for row in cursor.fetchall()}
+
+    # Проверяем, что все ожидаемые таблицы присутствуют
+    for table in EXPECTED_TABLES:
+        assert table in tables, f"Таблица {table} отсутствует в базе {db_connection.dbname}"
+
+    cursor.close()
