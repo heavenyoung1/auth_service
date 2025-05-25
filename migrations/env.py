@@ -16,7 +16,7 @@ url = URL.create(
     drivername="postgresql+psycopg2",
     username="postgres",
     password="P@ssw0rd",  
-    host="10.165.1.63",     
+    host="192.168.1.75",     
     port=5432,
     database="auth_test_db"
 )
@@ -26,7 +26,7 @@ admin_url = URL.create(
     drivername="postgresql+psycopg2",
     username="postgres",
     password="P@ssw0rd",
-    host="10.165.1.63",  
+    host="192.168.1.75",  
     port=5432,
     database="postgres"  # Основная база
 )
@@ -37,7 +37,7 @@ databases = {
         drivername="postgresql+psycopg2",
         username="postgres",
         password="P@ssw0rd",
-        host="10.165.1.63",  
+        host="192.168.1.75",  
         port=5432,
         database="auth_db"
     ),
@@ -45,7 +45,7 @@ databases = {
         drivername="postgresql+psycopg2",
         username="postgres",
         password="P@ssw0rd",
-        host="10.165.1.63",  
+        host="192.168.1.75",  
         port=5432,
         database="auth_test_db"
     )
