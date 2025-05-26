@@ -51,7 +51,8 @@ EXPECTED_TABLES = {"users", "refresh_tokens", "alembic_version"}
 
 @pytest.mark.parametrize("db_connection", DATABASES, indirect=True)
 def test_table_exist(db_connection):
-    cursor = db_connection.cursor()
+    connection, db_name = db_connection  # Распаковываем кортеж
+    cursor = connection.cursor()
 
     cursor.execute("""
     SELECT table_name

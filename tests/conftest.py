@@ -46,7 +46,7 @@ def client(setup_db):
 # Настройки подключения к PostgreSQL
 POSTGRES_USER = "postgres"
 POSTGRES_PASSWORD = "P@ssw0rd"
-POSTGRES_HOST = "192.168.1.75"
+POSTGRES_HOST = "10.165.1.63"
 POSTGRES_PORT = "5432"
 ADMIN_DB = "postgres"
 
@@ -75,5 +75,5 @@ def db_connection(request):
         host=POSTGRES_HOST,
         port=POSTGRES_PORT
     )
-    yield connection
+    yield connection, db_name
     connection.close()

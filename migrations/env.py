@@ -6,6 +6,23 @@ import sqlalchemy as sa
 from app.core.logger import logger
 from app.models.base import Base
 import os
+from dotenv import load_dotenv
+
+# Загружаем переменные окружения из .env
+load_dotenv()
+
+PG_USER = os.getenv("PG_USER", "postgres")
+PG_PASSWORD = os.getenv("PG_PASSWORD", "P@ssw0rd")
+
+PG_HOST = os.getenv("PG_HOST", "127.0.0.1")
+PG_PORT = os.getenv("PG_PORT", "5432")
+
+#PG_DRIVER = os.getenv("PG_DRIVER", "postgresql+psycopg2")
+
+#PG_ADMIN_DB = os.getenv("PП_ADMIN_DB", "postgres")
+PG_AUTH_DB = os.getenv("PG_AUTH_DB", "auth_db")
+#PG_AUTH_TEST_DB = os.getenv("PG_AUTH_TEST_DB", "auth_test_db")
+
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -14,20 +31,20 @@ fileConfig(config.config_file_name, disable_existing_loggers=False)
 
 url = URL.create(
     drivername="postgresql+psycopg2",
-    username="postgres",
-    password="P@ssw0rd",  
-    host="192.168.1.75",     
-    port=5432,
-    database="auth_test_db"
+    username=PG_USER,
+    password=PG_PASSWORD,  
+    host=PG_HOST,     
+    port=PG_PORT,
+    database="auth_test_db",
 )
 
 # URL для основной базы (для управления базами)
 admin_url = URL.create(
     drivername="postgresql+psycopg2",
-    username="postgres",
-    password="P@ssw0rd",
-    host="192.168.1.75",  
-    port=5432,
+    username=PG_USER,
+    password=PG_PASSWORD,
+    host=PG_HOST,  
+    port=PG_PORT,
     database="postgres"  # Основная база
 )
 
@@ -35,19 +52,19 @@ admin_url = URL.create(
 databases = {
     "auth_db": URL.create(
         drivername="postgresql+psycopg2",
-        username="postgres",
-        password="P@ssw0rd",
-        host="192.168.1.75",  
-        port=5432,
-        database="auth_db"
+        username=PG_USER,
+        password=PG_PASSWORD,
+        host=PG_HOST,  
+        port=PG_PORT,
+        database=PG_AUTH_DB,
     ),
     "auth_test_db": URL.create(
         drivername="postgresql+psycopg2",
-        username="postgres",
-        password="P@ssw0rd",
-        host="192.168.1.75",  
-        port=5432,
-        database="auth_test_db"
+        username=PG_USER,
+        password=PG_PASSWORD,
+        host=PG_HOST,  
+        port=PG_PORT,
+        database="auth_test_db",
     )
 }
 
