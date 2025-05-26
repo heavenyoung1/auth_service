@@ -63,8 +63,8 @@
   
         - name: Run migrations
           run: |
-              alembic check
-              alembic upgrade head
+            uv run -- alembic check
+            uv run -- alembic upgrade head
           env:
             DATABASE_URL: >-
               postgresql+psycopg2://postgres:P%40ssw0rd@localhost:5432/auth_db
@@ -85,11 +85,6 @@
             PG_DB: auth_db
           run: |
             uv run -- python -m pytest tests/ --cov=app --cov-report=xml
-  
-        - name: Run migrations
-          run: |
-            alembic check
-            alembic upgrade head
 
         - name: Upload coverage report
           uses: codecov/codecov-action@v5
