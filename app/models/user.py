@@ -1,4 +1,5 @@
 from sqlalchemy import String
+from sqlalchemy import event
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing import Literal, List
 
@@ -18,6 +19,12 @@ class User(Base):
     is_superuser: Mapped[bool] = mapped_column(default=False)
 
     refresh_tokens: Mapped[List["RefreshToken"]] =  relationship(back_populates="user", cascade="all, delete") # Добавлен List, теперь связь - One To Many
+
+@event.listens_for(User, "before_insert")
+@event.listens_for(User, "before_update")
+def sync_is_superuser(mapper, connection, target):
+    """ Автоматически устанавливает is_superuser=True для пользователей с role='admin' """
+    target.is_superuser = (target.role == "admin")
 
     def __repr__(self) -> str:
         return f"Метод __repr__: User(id={self.id!r}, login={self.login!r}, fullname={self.fullname!r})"

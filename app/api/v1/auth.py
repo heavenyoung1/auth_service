@@ -36,9 +36,9 @@ def register(
                     login=user_in.login,
                     fullname=user_in.fullname,
                     hashed_password=hashed_password,
-                    role=user_in.role
+                    role=user_in.role,
                     )
-    
+
     session.add(db_user)
     session.commit()
     session.refresh(db_user)
