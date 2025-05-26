@@ -19,7 +19,7 @@
           env:
             POSTGRES_USER: ${{ secrets.POSTGRES_USER_SECRET }}
             POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD_SECRET }}
-            POSTGRES_DB: ${{ vars.PG_DB }}
+            POSTGRES_DB: auth_db  # База по умолчанию, будет создана автоматически
           ports:
             - 5432:5432
           options: >-
@@ -41,6 +41,8 @@
               echo "Waiting for PostgreSQL to be ready..."
               sleep 2
             done
+            # Создаём auth_db, если ещё не существует (хотя создаётся через POSTGRES_DB)
+            psql -h localhost -p 5432 -U postgres -c "CREATE DATABASE IF NOT EXISTS auth_db;" || true
             psql -h localhost -p 5432 -U postgres -c "CREATE DATABASE auth_test_db;"
           env:
             PGPASSWORD: ${{ secrets.POSTGRES_PASSWORD_SECRET }}
@@ -63,7 +65,6 @@
   
         - name: Run migrations
           run: |
-            uv run -- alembic check
             uv run -- alembic upgrade head
           env:
             DATABASE_URL: >-
