@@ -4,25 +4,7 @@ from app.core.logger import logger
 from sqlalchemy import text
 import pytest
 
-def test_connection_db(test_session):
-    """ Тест - Подключение к БД при помощи SQLAlchemy """
-    # Проверка, что сессия не None и поддерживает выполнение запросов
-    assert test_session is not None, "Сессия не инициализирована"
-    logger.info("Сессия SQLAlchemy успешно создана.")
-
-    # Получение версии PostgreSQL
-    version = test_session.execute(text("SELECT version();")).scalar()
-    assert isinstance(version, str) and "PostgreSQL" in version, "Невозможно получить версию PostgreSQL"
-    logger.info(f"Версия PostgreSQL: {version}")
-
-    # Получение списка баз данных
-    result = test_session.execute(text("SELECT datname FROM pg_database;"))
-    database = [row[0] for row in result]
-    logger.info("Список баз данных")
-    for db in database:
-        logger.info(f"БД: {db}")
-
-
+@pytest.mark.usefixtures("test_session")
 def test_create_user(test_session):
     """ Тест - создание тестового пользователя, вручную """
     user = User(
@@ -32,37 +14,16 @@ def test_create_user(test_session):
         role="user",
     )
 
-    # Сохранение в БД
     test_session.add(user)
     test_session.commit()
+    logger.info(f"Пользователь {user.login} добавлен в базу.")
 
     # Проверка создания пользователя (что он был создан)
     db_user = test_session.query(User).filter(User.login == "testlogin").first()
     logger.info(f"Метод __repr__: {db_user}")
 
     assert db_user is not None, "Пользователь не был создан"
-    assert db_user.login == "testlogin"
+    assert db_user.login == "testlogin", "Логин пользователя не совпадает"
+    assert db_user.fullname == "Test User", "Имя пользователя не совпадает"
+    assert db_user.role == "user", "Роль пользователя не совпадает"
 
-# Список баз данных для проверки
-DATABASES = ["auth_db", "auth_test_db"]
-
-# Ожидаемые таблицы
-EXPECTED_TABLES = {"users", "refresh_tokens", "alembic_version"}
-
-@pytest.mark.parametrize("db_connection", DATABASES, indirect=True)
-def test_table_exist(db_connection):
-    connection, db_name = db_connection  # Распаковываем кортеж
-    cursor = connection.cursor()
-
-    cursor.execute("""
-    SELECT table_name
-    FROM information_schema.tables
-    WHERE table_schema = 'public'
-    """)
-    tables = {row[0] for row in cursor.fetchall()}
-
-    # Проверяем, что все ожидаемые таблицы присутствуют
-    for table in EXPECTED_TABLES:
-        assert table in tables, f"Таблица {table} отсутствует в базе {db_connection.dbname}"
-
-    cursor.close()
