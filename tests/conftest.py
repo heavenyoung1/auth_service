@@ -2,13 +2,12 @@ from app.main import app
 from app.models.user import Base
 from app.database.db import get_session
 from app.core.config import settings
+from app.core.logger import logger
 
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 import pytest
-import psycopg2
-from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
 # Настройка тестовой Базы Данных
 engine = create_engine(settings.TEST_DATABASE_URL, echo=True)
@@ -16,19 +15,24 @@ TestingSession = sessionmaker(engine)
 
 @pytest.fixture(scope="function")
 def setup_db():
+    """ Инициализирует тестовую базу данных перед тестом и очищает данные после  """
+    logger.info("Инициализация тестовой базы данных...")
     # Создаем таблицы перед тестом
     Base.metadata.create_all(bind=engine)
     yield
     # Удаляем таблицы после теста
     Base.metadata.drop_all(bind=engine)
+    # Подключаемся к базе для очистки данных
 
 @pytest.fixture
 def test_session(setup_db):
+    """ Предоставляет сессию SQLAlchemy для тестов """
     with TestingSession() as session:
         yield session
 
 @pytest.fixture
 def client(setup_db):
+    """ Предоставляет тестовый клиент FastAPI с переопределённой сессией """
     def override_get_session():
         with TestingSession() as session:
             yield session
@@ -42,38 +46,4 @@ def client(setup_db):
 
     # Очищаем переопределения после теста
     app.dependency_overrides.clear()
-
-# Настройки подключения к PostgreSQL
-POSTGRES_USER = "postgres"
-POSTGRES_PASSWORD = "P@ssw0rd"
-POSTGRES_HOST = "10.165.1.63"
-POSTGRES_PORT = "5432"
-ADMIN_DB = "postgres"
-
-# @pytest.fixture(scope="session")
-# def admin_connection():
-#     connection = psycopg2.connect(
-#         dbname=ADMIN_DB,
-#         user=POSTGRES_USER,
-#         password=POSTGRES_PASSWORD,
-#         host=POSTGRES_HOST,
-#         port=POSTGRES_PORT,    
-#     )
-#     connection.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
-#     yield connection
-#     connection.close()
-
-# Фикстура для подключения к конкретной базе
-@pytest.fixture
-def db_connection(request):
-    """Фикстура для подключения к указанной базе данных."""
-    db_name = request.param
-    connection = psycopg2.connect(
-        dbname=db_name,
-        user=POSTGRES_USER,
-        password=POSTGRES_PASSWORD,
-        host=POSTGRES_HOST,
-        port=POSTGRES_PORT
-    )
-    yield connection, db_name
-    connection.close()
+    logger.info("Тестовый клиент FastAPI закрыт.")

@@ -104,31 +104,6 @@ target_metadata = Base.metadata
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
 
-
-# def run_migrations_offline() -> None:
-#     """Run migrations in 'offline' mode."""
-#     context.configure(
-#         url=url,
-#         target_metadata=target_metadata,
-#         literal_binds=True,
-#         dialect_opts={"paramstyle": "named"},
-#     )
-
-#     with context.begin_transaction():
-#         context.run_migrations()
-
-# def run_migrations_online() -> None:
-#     """Run migrations in 'online' mode."""
-#     # Используем тот же движок, что в отладке
-#     with engine.connect() as connection:
-#         context.configure(
-#             connection=connection,
-#             target_metadata=target_metadata
-#         )
-
-#         with context.begin_transaction():
-#             context.run_migrations()
-
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode."""
     context.configure(
