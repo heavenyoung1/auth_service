@@ -1,15 +1,13 @@
 from app.core.config import settings
 from app.core.logger import logger
 from app.models.token import RefreshToken
-from app.models.user import User
 
-from datetime import datetime, timedelta, timezone
+from datetime import timedelta, timezone
 from unittest.mock import patch
 from dataclasses import dataclass
 from jose import jwt
 import pytest
 from sqlalchemy.sql import text
-from unittest.mock import patch, MagicMock
 
 
 # Фабрика для генерации данных пользователя
@@ -26,7 +24,21 @@ def user_factory():
         return UserData(**kwargs)
     return create_user
 
-def test_register_success(client, user_factory): # TEST PASSED
+# Фикстура для регистрации и логина пользователя
+@pytest.fixture
+def authenticated_user(client, user_factory):
+    """Фикстура для создания зарегистрированного и авторизованного пользователя."""
+    user = user_factory()
+    client.post("/API/v0.1/register", json=user.__dict__)
+    login_response = client.post("/API/v0.1/login", data={
+        "username": user.login,
+        "password": user.password
+    })
+    assert login_response.status_code == 200, "Не удалось авторизовать пользователя"
+    tokens = login_response.json()
+    return user, tokens["access_token"], tokens["refresh_token"]
+
+def test_register_success(client, user_factory):
     """Тест - успешная регистрация пользователя"""
     user = user_factory()  # Создание данных пользователя из класса UserData
     response = client.post("/API/v0.1/register", json=user.__dict__)
@@ -44,15 +56,15 @@ def test_register_duplicate_login(client, user_factory): # TEST PASSED
     assert response.status_code == 400
     assert response.json()["detail"] == "Такой логин уже существует"
 
-def test_register_short_password(client, user_factory): # TEST PASSED
+def test_register_short_password(client, user_factory):
     """Тест - попытка регистрации с коротким паролем"""
     user = user_factory(password="000")  # Создание данных пользователя из класса UserData c переопределением пароля
     response = client.post("/API/v0.1/register", json=user.__dict__) 
 
     assert response.status_code == 422, "Ошибка 422, выдаётся Pydantic`ом, валидация происходит в схеме UserCreate"
 
-def test_login_success(client, user_factory): # TEST PASSED
-    """Тест - Успешный вход"""
+def test_login_success(client, user_factory):
+    """Тест - успешный вход"""
     user = user_factory()  # Создание данных пользователя из класса UserData
     # Регистрация пользователя 
     client.post("/API/v0.1/register", json=user.__dict__) 
@@ -73,7 +85,7 @@ def test_login_success(client, user_factory): # TEST PASSED
     assert "refresh_token" in response_data
     assert response_data["token_type"] == "bearer"
 
-def test_login_wrong_password(client, user_factory): # TEST PASSED
+def test_login_wrong_password(client, user_factory):
     """Тест - Логин с неправильным паролем"""
     user = user_factory()  # Создание данных пользователя из класса UserData
     # Регистрация пользователя 
@@ -96,11 +108,10 @@ def test_login_unexistent_user(client): # TEST PASSED
         "password": "PASSWORD"
         }
     )
-    
     assert response.status_code == 401
     assert response.json()["detail"] == "Неверный логин"
 
-def test_get_current_user(client, user_factory): # TEST PASSED
+def test_get_current_user(client, user_factory):
     """Тест - получение текущего пользователя"""
     user = user_factory()  # Создание данных пользователя из класса UserData
 
@@ -295,3 +306,5 @@ def test_refresh_token_not_found(client, user_factory):
     })
     assert refresh_response.status_code == 404
     assert refresh_response.json()["detail"] == "Refresh-токен не найден"
+
+

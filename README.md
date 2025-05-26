@@ -125,9 +125,9 @@ cd /ваш_путь/auth_service/backend
 uv venv
 source .venv/bin/activate
 ```
-### Установка зависимостей из файла pyproject.toml
+### Установка зависимостей из файла pyproject.toml (в том числе и dev зависимостей)
 ```
-uv sync
+uv sync --all-extras
 ```
 
 ### Настройка файла окружения (.env)
@@ -198,8 +198,8 @@ docker network create auth-network
 docker run -d \
   --name auth-postgres \
   --network auth-network \
-  -e POSTGRES_USER=admin \
-  -e POSTGRES_PASSWORD=secretpass123 \
+  -e POSTGRES_USER=postgres \
+  -e POSTGRES_PASSWORD=P@ssw0rd \
   -e POSTGRES_DB=auth_db \
   -p 5432:5432 \
   postgres:latest
@@ -210,8 +210,8 @@ docker run -d \
 docker run -d \
   --name pgadmin \
   --network auth-network \
-  -e PGADMIN_DEFAULT_EMAIL=admin@example.com \
-  -e PGADMIN_DEFAULT_PASSWORD=adminpass123 \
+  -e PGADMIN_DEFAULT_EMAIL=admin@admin.com \
+  -e PGADMIN_DEFAULT_PASSWORD=1234 \
   -p 8080:80 \
   dpage/pgadmin4
 ```
@@ -221,9 +221,9 @@ docker run -d \
 docker ps
 ```
 
-### Запуск скрипта для создания БД
+### Запуск миграции для создания БД и таблиц в БД при помощи Alembic
 ```
-python -m app.database.create_db
+alembic upgrade head
 ```
 
 ### Запуск тестов
@@ -245,3 +245,8 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 3. Сделайте коммиты с понятными сообщениями (например, `feat: добавлена новая фича`).
 4. Отправьте PR в ветку `dev` с описанием изменений.
 5. Убедитесь, что CI проходит успешно.
+
+## Установка новых пакетов при помощи uv
+```
+uv add requests
+```
